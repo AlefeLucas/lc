@@ -1,0 +1,8 @@
+declaração:     const id = valor;
+exemplo:
+    const a = 'uma string';
+    const b = -1234;
+    const c = true;
+    const d = 0hDD;
+    const e = 0hdd;
+    const f = 1234;

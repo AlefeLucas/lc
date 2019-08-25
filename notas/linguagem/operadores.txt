@@ -1,0 +1,18 @@
+em ordem de precedência:
+( )
+not
+* and /
+- +[1] or +[2]
+==[3] != < > <= >= ==[4]
+
+1: soma
+2: concatenação
+3: igual aritmético
+4: igual strings
+
+por tipos:
+( )
+and or not
++ - * /
+== != < > <= >=
+==

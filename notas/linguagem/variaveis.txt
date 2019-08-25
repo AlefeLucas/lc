@@ -1,0 +1,19 @@
+declaração:    tipo lista-de-ids;
+exemplo:
+    boolean a,b,c,d;
+    integer a;
+
+inicialização:     id = valor;
+exemplo:
+    a = 'uma string';
+    b = -1234;
+    c = true;
+    d = 0hDD;
+    e = 0hdd;
+    f = 1234;
+
+atribuição:     id = expressão;
+exemplo:
+    a = b + c;
+    b = 3;
+    d = true and false;

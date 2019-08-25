@@ -1,0 +1,7 @@
+identificadores:
+- case sensitive
+- letras, dígitos e sublinhado
+- não começa com dígito
+- não contém apenas sublinhado
+- máximo 255 caracteres
+- regex (não limita pra 255):   (^[a-zA-Z][\w]*$)|(^[_]+[a-zA-Z0-9][\w]*$)

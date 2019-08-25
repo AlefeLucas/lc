@@ -1,0 +1,13 @@
+Repetição:
+
+while(expressão) comando
+while(expressão) begin comandos end
+
+Condicional:
+if(expressão) then comando1
+if(expressão) then comando1 else comando2
+if(expressão) then begin lista_comandos1 end
+if(expressão) then begin lista_comandos1 end else begin lista_comandos2 end
+
+
+expressão = que produz valor lógico

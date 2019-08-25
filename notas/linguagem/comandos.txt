@@ -1,0 +1,14 @@
+comando nulo:
+;
+
+leitura:
+readln(id_variavel);
+
+escrita:
+write(lista_expressões);
+writeln(lista_expressões);
+
+lista_expressões = expressões separadas por vírgula
+
+exemplo:
+    write(1, 'dois', 3);              -      1dois3

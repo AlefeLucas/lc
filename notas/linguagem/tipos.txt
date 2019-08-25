@@ -1,0 +1,21 @@
+byte, integer, boolean, string;
+
+byte - 0 to 255
+    escrito em decimal ou hexadecimal
+    1 byte
+
+integer - -32768 to 32767
+    escrito em decimal ou hexadecimal
+    2 bytes
+
+(hexadecimal é escrito na notação 0hFF)
+
+boolean: false or true (bytes 0h or FFh)
+    1 byte
+
+string: arranjo de até 255 caracteres
+    finalizado por '$'
+    256 bytes
+    delimitado por apóstrofos
+    não contém quebra de linha
+    apóstrofo é representado com dois apóstrofos em sequência

@@ -1,0 +1,6 @@
+const integer byte string while if
+else and or not = ==
+( ) < > != >=
+<= , + - * /
+; begin end then readln main
+write writeln true false boolean
