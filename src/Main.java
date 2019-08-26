@@ -1,5 +1,9 @@
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
 
 public class Main {
 
@@ -19,11 +23,26 @@ public class Main {
 
             if (sourceFile != null && outputFile != null) {
                 //TODO arquivos estao ok, prosseguir
+                try {
+                    String source = readFile(sourceFile, StandardCharsets.US_ASCII);
+                    ArrayList<Token> tokens = Lexer.lex(source);
+                    for (Token token : tokens) {
+                        System.out.println(token);
+                    }
+                } catch (IOException e) {
+                    System.out.println("Error: failed to read source file.\n" + e.getMessage());
+                }
 
             } else {
                 System.exit(1);
             }
         }
+    }
+
+    public static String readFile(File file, Charset charset) throws IOException {
+
+        return new String(Files.readAllBytes(file.toPath()), charset);
+
     }
 
 
