@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -7,8 +8,11 @@ import java.util.regex.Pattern;
  */
 public class Lexer {
 
-    public static ArrayList<Token> lex(String input) {
+    public static  ArrayList<Token> lex(String input) {
+        input = removingNewLineAndComments(input);
+        
         ArrayList<Token> tokens = new ArrayList<>();
+        SymbolTable symbolTable = SymbolTableSingleton.getInstance();
 
         StringBuilder tokenPatternsBuffer = new StringBuilder();
         for (TokenType tokenType : TokenType.values())
@@ -19,12 +23,22 @@ public class Lexer {
         while (matcher.find()) {
             for (TokenType type : TokenType.values()) {
                 if (matcher.group(type.getGroupName()) != null) {
-                    tokens.add(new Token(type, matcher.group(type.getGroupName())));
+                    Token token = new Token(matcher.group(type.getGroupName()), type);
+                    if(token.getValue() == TokenType.ID && symbolTable.get(token.getKey()) == null){
+                        symbolTable.put(token.getKey(), TokenType.ID);
+                    }
+                    tokens.add(token);
                 }
             }
-
         }
-
         return tokens;
+    }
+
+    private static String removingNewLineAndComments(String input) {
+        input = input
+                .replaceAll("\r", " ")
+                .replaceAll("\n", " ")
+                .replaceAll("\\/\\*[\\w!\"&(*)+,\\-.\\/:;<=>?\\[\\]{} ]*?\\*\\/", " ");
+        return input;
     }
 }
