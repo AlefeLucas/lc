@@ -5,3 +5,4 @@ https://github.com/ranveeraggarwal/simple-c-like-compiler/blob/master/parser/gra
 https://github.com/jcoleman/compiler-class-project/tree/master/src/cps450
 http://giocc.com/writing-a-lexer-in-java-1-7-using-regex-named-capturing-groups.html
 https://github.com/IraKorshunova/JavaCompiler/blob/master/src/lexer/Lexer.java
+http://www.mheidari.me/sites/default/files/book/Compilers, Principles, Techniques and Tools.pdf
