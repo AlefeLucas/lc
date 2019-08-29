@@ -25,7 +25,7 @@ public class Main {
                 //TODO arquivos estao ok, prosseguir
                 try {
                     String source = readFile(sourceFile, StandardCharsets.US_ASCII);
-                    ArrayList<Token> tokens = Lexer.lex(source);
+                    ArrayList<Token> tokens = LexerOld.lex(source);
 
                     System.out.println(SymbolTableSingleton.getInstance());
                 } catch (IOException e) {
