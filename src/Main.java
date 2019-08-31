@@ -26,7 +26,7 @@ public class Main {
                 try {
                     String source = readFile(sourceFile, StandardCharsets.US_ASCII);
                     ArrayList<Token> tokens = LexerOld.lex(source);
-
+                    //tokens.forEach(System.out::println);
                     System.out.println(SymbolTableSingleton.getInstance());
                 } catch (IOException e) {
                     System.out.println("Error: failed to read source file.\n" + e.getMessage());
