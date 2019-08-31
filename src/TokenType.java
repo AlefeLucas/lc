@@ -50,9 +50,6 @@ public enum TokenType {
     STRING_CONSTANT("[']([\\w!\"&(*)+,\\-.\\/:;<=>?\\[\\]{} ]|(''))*[']"),
     ID("\\b([a-zA-Z][\\w]*)|([_][_]*[a-zA-Z0-9][\\w]*)\\b");
 
-
-
-
     private final String regex;
 
     TokenType(String regex){
