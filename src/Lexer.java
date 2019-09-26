@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Lexer {
 
     //TODO
-    public static ArrayList<Token> lex(String input) {
+    public static Token lex(String input) {
         return null;
     }
 }
