@@ -11,7 +11,7 @@ public class Token implements Map.Entry<String, TokenType>{
 
     @Override
     public String toString() {
-        return String.format("<\"%s\", %s>", lexeme, token.getGroupName());
+        return String.format("<\"%s\", %s>", lexeme, token.name());
     }
 
     @Override

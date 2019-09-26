@@ -15,7 +15,8 @@ import java.util.HashMap;
  *
  * @see <link>https://stackoverflow.com/questions/14954721/what-is-the-difference-between-a-token-and-a-lexeme</link>
  */
-public class SymbolTable extends HashMap<String, TokenType> {
+@SuppressWarnings({"WeakerAccess"})
+public class SymbolTable extends HashMap<String, Token> {
 
 
     public SymbolTable() {
@@ -34,8 +35,8 @@ public class SymbolTable extends HashMap<String, TokenType> {
         this.put("readln", TokenType.READLN);
         this.put("write", TokenType.WRITE);
         this.put("writeln", TokenType.WRITELN);
-        this.put("true", TokenType.TRUE);
-        this.put("false", TokenType.FALSE);
+        this.put("true", TokenType.BOOL);
+        this.put("false", TokenType.BOOL);
         this.put("and", TokenType.AND);
         this.put("or", TokenType.OR);
         this.put("not", TokenType.NOT);
@@ -56,10 +57,14 @@ public class SymbolTable extends HashMap<String, TokenType> {
         this.put(")", TokenType.CLOSE_BRACE);
     }
 
+    public Token put(String key, TokenType value) {
+        return this.put(key, new Token(key, value));
+    }
+
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder("SymbolTable{\n");
-        this.forEach((lexeme, token) -> s.append(new Token(lexeme, token)).append("\n"));
+        this.forEach((lexeme, token) -> s.append(token).append("\n"));
         s.append("}\n");
         return s.toString();
     }

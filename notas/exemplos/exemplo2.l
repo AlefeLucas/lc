@@ -7,7 +7,7 @@ main
   write('Digite seu nome: ');
   readln(nome);
   naoTerminou=true;
-  n=0;
+  n=0hFF;
   while (naoTerminou) begin
     writeln('Ola'' ',nome);
     n=n+1;

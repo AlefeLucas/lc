@@ -25,8 +25,15 @@ public class Main {
                 //TODO arquivos estao ok, prosseguir
                 try {
                     String source = readFile(sourceFile, StandardCharsets.US_ASCII);
-                    ArrayList<Token> tokens = LexerOld.lex(source);
-                    //tokens.forEach(System.out::println);
+                    Lexer lexer = new Lexer(source);
+                    while (lexer.hasNext()) {
+                        Token next = lexer.next();
+                        if (next != null) {
+                            System.out.println(next);
+                        }
+                    }
+
+                    System.out.println("\n\n");
                     System.out.println(SymbolTableSingleton.getInstance());
                 } catch (IOException e) {
                     System.out.println("Error: failed to read source file.\n" + e.getMessage());
@@ -40,7 +47,7 @@ public class Main {
 
     public static String readFile(File file, Charset charset) throws IOException {
 
-        return new String(Files.readAllBytes(file.toPath()), charset);
+        return Files.readString(file.toPath(), charset);
 
     }
 
