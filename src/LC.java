@@ -3,11 +3,10 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
 
-public class Main {
+public class LC {
 
-    private static final String USAGE = "Usage: java lc <source file> <output assembly program>";
+    private static final String USAGE = "Uso: java LC <arquivo fonte> <saida assembly>";
 
     /**
      * @param args argumentos da linha de comando do programa.
@@ -29,10 +28,8 @@ public class Main {
                     Parser parser = new Parser(source);
                     parser.parse();
 
-                    System.out.println("\n\n");
-                    System.out.println(SymbolTableSingleton.getInstance());
                 } catch (IOException e) {
-                    System.out.println("Error: failed to read source file.\n" + e.getMessage());
+                    System.out.println("Erro: falhou ao ler arquivo fonte.\n" + e.getMessage());
                 }
 
             } else {
@@ -64,10 +61,10 @@ public class Main {
                 file.createNewFile();
                 output = file;
             } catch (IOException e) {
-                System.out.println("lc: Could not create output file.");
+                System.out.println("lc: Nao pode criar arquivo de saida.");
             }
         } else {
-            System.out.println("lc: Invalid output file format. Use assembly (.asm) extension.");
+            System.out.println("lc: Formato de saida invalido. Use extensao assembly (.asm).");
         }
 
         return output;
@@ -88,7 +85,7 @@ public class Main {
                 source = file;
             }
         } else {
-            System.out.println("lc: Invalid source file format. Use .L extension.");
+            System.out.println("lc: Formato de entrado invalido. Use extensao .L");
         }
 
         return source;
@@ -101,12 +98,12 @@ public class Main {
         boolean validSourceFile = false;
         if (sourceFile.exists()) {
             if (!sourceFile.canRead()) {
-                System.out.println("lc: Cannot read from " + sourceFile.getPath());
+                System.out.println("lc: Nao pode ler de " + sourceFile.getPath());
             } else {
                 validSourceFile = true;
             }
         } else {
-            System.out.println("lc: file not found: " + sourceFile.getPath());
+            System.out.println("lc: arquivo nao encontrado: " + sourceFile.getPath());
             System.out.println(USAGE);
         }
 

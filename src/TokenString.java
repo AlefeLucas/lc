@@ -4,8 +4,7 @@ public class TokenString extends Token implements TokenConstant<String> {
 
     public TokenString(String lexeme, TokenType token) {
         super(lexeme, token);
-
-        this.constant = lexeme.substring(1, lexeme.length() -1);
+        this.constant = lexeme.substring(1, lexeme.length() -1).replaceAll("''", "'");
     }
 
     public String getConstant() {

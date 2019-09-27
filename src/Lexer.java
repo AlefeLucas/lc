@@ -1,22 +1,21 @@
 import java.util.Iterator;
 
 /**
- * Analisador Lexico,
- * Basear-se no modelo do prof, fazer a partir do automato
- * (https://drive.google.com/file/d/1DJuAqXUds5pCHj5xrt22JVRhGvdpjEdk/view?usp=sharing)
+ *
  */
 @SuppressWarnings("WeakerAccess")
 public class Lexer implements Iterator<Token> {
-
     private final char[] source;
-    private static final String symbols = "!\"&'(*)+,-./:;<=>?[]_{} \n\r";
-    private final SymbolTable symbolTable;
+    private static final String symbols = "!\"&'(*)+,-./:;<=>?[]_{} \n\r\t";
+    private final Register symbolTable;
+    private final Register lexical;
     private int line;
     private int index;
 
     public Lexer(String source) {
-        this.source = source.stripTrailing().toCharArray();
+        this.source = source.stripTrailing().replace("\r\n", "\n").toCharArray();
         this.symbolTable = SymbolTableSingleton.getInstance();
+        this.lexical = LexicalSingleton.getInstance();
         this.line = 1;
     }
 
@@ -40,7 +39,8 @@ public class Lexer implements Iterator<Token> {
                 Character c = (index < source.length ? source[index] : '\0');
 
                 if (!isFromAlphabet(c) && c != '\0') {
-                    throw new IllegalStateException(String.format("Error. Character %c in line %d not expected.", c, line));
+                    System.err.printf("%d:caractere invalido.\n", line);
+                    System.exit(1);
                 }
 
                 switch (state) {
@@ -78,9 +78,9 @@ public class Lexer implements Iterator<Token> {
                             tok.append(c);
                             index++;
                             state = 4;
-                        } else if (" \n\r\0".contains(c.toString())) {
+                        } else if ("\t\n\r\0".contains(c.toString() ) || Character.isWhitespace(c)) {
                             index++;
-                            if (c != ' ') {
+                            if ("\n\r".contains(c.toString())) {
                                 line++;
                             }
                         } else if (c == '/') {
@@ -88,7 +88,8 @@ public class Lexer implements Iterator<Token> {
                             index++;
                             state = 12;
                         } else {
-                            throw new IllegalStateException(String.format("Error. Character %c in line %d not expected.", c, line));
+                            System.err.printf("%d:lexema nao identificado [%s]\n", line, tok.toString());
+                            System.exit(1);
                         }
                         break;
                     case 1:
@@ -100,7 +101,8 @@ public class Lexer implements Iterator<Token> {
                             index++;
                             state = 2;
                         } else {
-                            throw new IllegalStateException(String.format("Error. Character %c in line %d not expected.", c, line));
+                            System.err.printf("%d:lexema nao identificado [%s]\n", line, tok.toString());
+                            System.exit(1);
                         }
                         break;
                     case 2:
@@ -121,7 +123,8 @@ public class Lexer implements Iterator<Token> {
                         break;
                     case 3:
                         if (token == null) {
-                            throw new IllegalStateException("Error. ");
+                            System.err.printf("%d:fim de arquivo nao esperado.\n", line);
+                            System.exit(1);
                         }
                     case 4:
                         if (Character.isDigit(c)) {
@@ -129,7 +132,7 @@ public class Lexer implements Iterator<Token> {
                             index++;
                         } else {
                             token = new TokenNumber(tok.toString(), TokenType.NUMERAL_CONSTANT);
-                            symbolTable.put(token.getKey(), token);
+                            lexical.put(tok.toString(), token);
                             state = 3;
                             //devolve
                         }
@@ -145,7 +148,7 @@ public class Lexer implements Iterator<Token> {
                             state = 6;
                         } else {
                             token = new TokenNumber(tok.toString(), TokenType.NUMERAL_CONSTANT);
-                            symbolTable.put(token.getKey(), token);
+                            lexical.put(tok.toString(), token);
                             state = 3;
                             //devolve
                         }
@@ -156,7 +159,8 @@ public class Lexer implements Iterator<Token> {
                             index++;
                             state = 7;
                         } else {
-                            throw new IllegalStateException(String.format("Error. Character %c in line %d not expected.", c, line));
+                            System.err.printf("%d:lexema nao identificado [%s]\n", line, tok.toString());
+                            System.exit(1);
                         }
                         break;
                     case 7:
@@ -165,7 +169,7 @@ public class Lexer implements Iterator<Token> {
                             index++;
                         } else {
                             token = new TokenNumber(tok.toString(), TokenType.NUMERAL_CONSTANT);
-                            symbolTable.put(token.getKey(), token);
+                            lexical.put(tok.toString(), token);
                             state = 3;
                             //devolve
                         }
@@ -175,9 +179,12 @@ public class Lexer implements Iterator<Token> {
                             tok.append(c);
                             index++;
                             state = 9;
-                        } else {
+                        } else if (!"\r\n".contains(c.toString())) {
                             tok.append(c);
                             index++;
+                        } else {
+                            System.err.printf("%d:lexema nao identificado [%s]\n", line, tok.toString());
+                            System.exit(1);
                         }
                         break;
                     case 9:
@@ -187,7 +194,7 @@ public class Lexer implements Iterator<Token> {
                             state = 8;
                         } else {
                             token = new TokenString(tok.toString(), TokenType.STRING_CONSTANT);
-                            symbolTable.put(token.getKey(), token);
+                            lexical.put(tok.toString(), token);
                             state = 3;
                             //devolve
                         }
@@ -212,7 +219,8 @@ public class Lexer implements Iterator<Token> {
                             token = symbolTable.get(tok.toString());
                             state = 3;
                         } else {
-                            throw new IllegalStateException(String.format("Error. Character %c in line %d not expected.", c, line));
+                            System.err.printf("%d:lexema nao identificado [%s]\n", line, tok.toString());
+                            System.exit(1);
                         }
                         break;
                     case 12:
@@ -231,6 +239,9 @@ public class Lexer implements Iterator<Token> {
                             index++;
                             state = 14;
                         } else {
+                            if ("\n\r".contains(c.toString())) {
+                                line++;
+                            }
                             index++;
                         }
                         break;

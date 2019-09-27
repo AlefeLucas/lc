@@ -1,6 +1,6 @@
 import java.util.Arrays;
 import java.util.Comparator;
-
+@SuppressWarnings("WeakerAccess")
 public class Parser {
 
     private Lexer lexer;
@@ -15,20 +15,21 @@ public class Parser {
     }
 
     public void parse() {
-        token = lexer.next();
-        s();
-        System.out.println("Parsing ok");
+        try {
+            token = lexer.next();
+            s();
+        }catch (NullPointerException ex){
+            System.err.printf("%d:fim de arquivo não esperado.\n", lexer.getLine());
+        }
     }
 
     private void matchToken(TokenType expectedToken) {
-        System.out.println("Expected: " + expectedToken.name());
         if (expectedToken.equals(token.getValue())) {
             token = lexer.next();
         } else {
-            System.out.println("Found: " + token.getValue().name());
-            String error = String.format("%d:token nao experado [%s]\n", lexer.getLine(), token.getKey());
-            System.out.print(error);
-            throw new IllegalStateException(error);
+            String error = String.format("%d:token nao esperado [%s]\n", lexer.getLine(), token.getKey());
+            System.err.print(error);
+            System.exit(1);
         }
     }
 
@@ -225,6 +226,5 @@ public class Parser {
             c();
         }
     }
-
 
 }
