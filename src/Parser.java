@@ -1,5 +1,6 @@
 import java.util.Arrays;
 import java.util.Comparator;
+
 @SuppressWarnings("WeakerAccess")
 public class Parser {
 
@@ -7,7 +8,7 @@ public class Parser {
     private Token token;
     private static final TokenType[] FIRST_D = {TokenType.BOOLEAN, TokenType.BYTE, TokenType.CONST, TokenType.INTEGER, TokenType.STRING};
     private static final TokenType[] FIRST_C = {TokenType.ID, TokenType.IF, TokenType.READLN, TokenType.SEMICOLON, TokenType.WHILE, TokenType.WRITE, TokenType.WRITELN};
-    private static final TokenType[] FIRST_E = {TokenType.ID, TokenType.MINUS, TokenType.NOT, TokenType.NUMERAL_CONSTANT, TokenType.OPEN_BRACE, TokenType.PLUS, TokenType.STRING_CONSTANT};
+    private static final TokenType[] FIRST_E = {TokenType.CONSTANT, TokenType.ID, TokenType.MINUS, TokenType.NOT,  TokenType.OPEN_BRACE, TokenType.PLUS};
 
 
     public Parser(String source) {
@@ -18,7 +19,7 @@ public class Parser {
         try {
             token = lexer.next();
             s();
-        }catch (NullPointerException ex){
+        } catch (NullPointerException ex) {
             System.err.printf("%d:fim de arquivo nao esperado.\n", lexer.getLine());
         }
     }
@@ -56,8 +57,19 @@ public class Parser {
             } else {
                 matchToken(TokenType.BYTE);
             }
-
             matchToken(TokenType.ID);
+            if (token.getValue() == TokenType.ASSIGN) {
+                matchToken(TokenType.ASSIGN);
+                e();
+            }
+            while (token.getValue() == TokenType.COMMA) {
+                matchToken(TokenType.COMMA);
+                matchToken(TokenType.ID);
+                if (token.getValue() == TokenType.ASSIGN) {
+                    matchToken(TokenType.ASSIGN);
+                    e();
+                }
+            }
             matchToken(TokenType.SEMICOLON);
         } else {
             matchToken(TokenType.CONST);
@@ -65,14 +77,8 @@ public class Parser {
             matchToken(TokenType.ASSIGN);
             if (token.getValue() == TokenType.MINUS) {
                 matchToken(TokenType.MINUS);
-                matchToken(TokenType.NUMERAL_CONSTANT);
-            } else if (token.getValue() == TokenType.NUMERAL_CONSTANT) {
-                matchToken(TokenType.NUMERAL_CONSTANT);
-            } else if (token.getValue() == TokenType.STRING_CONSTANT) {
-                matchToken(TokenType.STRING_CONSTANT);
-            } else {
-                matchToken(TokenType.BOOL);
             }
+            matchToken(TokenType.CONSTANT);
             matchToken(TokenType.SEMICOLON);
         }
     }
@@ -85,13 +91,11 @@ public class Parser {
             matchToken(TokenType.ASSIGN);
             e();
             matchToken(TokenType.SEMICOLON);
-        } else if (Arrays.binarySearch(FUNCTIONS, token.getValue(), Comparator.comparing(Enum::name)) >= 0) {
+        } else if (token.getValue() == TokenType.WRITELN || token.getValue() == TokenType.WRITE) {
             if (token.getValue() == TokenType.WRITE) {
                 matchToken(TokenType.WRITE);
-            } else if (token.getValue() == TokenType.WRITELN) {
-                matchToken(TokenType.WRITELN);
             } else {
-                matchToken(TokenType.READLN);
+                matchToken(TokenType.WRITELN);
             }
             matchToken(TokenType.OPEN_BRACE);
             if (Arrays.binarySearch(FIRST_E, token.getValue(), Comparator.comparing(Enum::name)) >= 0) {
@@ -103,6 +107,12 @@ public class Parser {
             }
             matchToken(TokenType.CLOSE_BRACE);
 
+            matchToken(TokenType.SEMICOLON);
+        } else if (token.getValue() == TokenType.READLN) {
+            matchToken(TokenType.READLN);
+            matchToken(TokenType.OPEN_BRACE);
+            matchToken(TokenType.ID);
+            matchToken(TokenType.CLOSE_BRACE);
             matchToken(TokenType.SEMICOLON);
         } else if (token.getValue() == TokenType.WHILE) {
             matchToken(TokenType.WHILE);
@@ -202,12 +212,8 @@ public class Parser {
     private void k() {
         if (token.getValue() == TokenType.ID) {
             matchToken(TokenType.ID);
-        } else if (token.getValue() == TokenType.NUMERAL_CONSTANT) {
-            matchToken(TokenType.NUMERAL_CONSTANT);
-        } else if (token.getValue() == TokenType.STRING_CONSTANT) {
-            matchToken(TokenType.STRING_CONSTANT);
-        } else if (token.getValue() == TokenType.BOOL) {
-            matchToken(TokenType.BOOL);
+        } else if (token.getValue() == TokenType.CONSTANT) {
+            matchToken(TokenType.CONSTANT);
         } else {
             matchToken(TokenType.OPEN_BRACE);
             e();

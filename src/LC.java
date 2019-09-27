@@ -30,6 +30,7 @@ public class LC {
 
                 } catch (IOException e) {
                     System.out.println("Erro: falhou ao ler arquivo fonte.\n" + e.getMessage());
+                    e.printStackTrace();
                 }
 
             } else {

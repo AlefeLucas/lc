@@ -16,7 +16,6 @@ public enum TokenType {
     READLN,
     WRITE,
     WRITELN,
-    BOOL,
     AND,
     OR,
     NOT,
@@ -35,8 +34,7 @@ public enum TokenType {
     SEMICOLON,
     OPEN_BRACE,
     CLOSE_BRACE,
-    NUMERAL_CONSTANT,
-    STRING_CONSTANT,
+    CONSTANT,
     ID;
 
     TokenType() {

@@ -21,8 +21,8 @@ public abstract class SymbolTableSingleton {
             symbolTable.put("readln", TokenType.READLN);
             symbolTable.put("write", TokenType.WRITE);
             symbolTable.put("writeln", TokenType.WRITELN);
-            symbolTable.put("true", TokenType.BOOL);
-            symbolTable.put("false", TokenType.BOOL);
+            symbolTable.put("true", new TokenBoolean("true", TokenType.CONSTANT));
+            symbolTable.put("false", new TokenBoolean("false", TokenType.CONSTANT));
             symbolTable.put("and", TokenType.AND);
             symbolTable.put("or", TokenType.OR);
             symbolTable.put("not", TokenType.NOT);

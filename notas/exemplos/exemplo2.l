@@ -1,4 +1,4 @@
-/* Exemplo de Programa na linguagem L */
+/* Erro token nao esperado */
 
 integer n;
 string nome;

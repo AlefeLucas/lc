@@ -1,3 +1,6 @@
+/**
+ * Teste
+ */
 public class TokenString extends Token implements TokenConstant<String> {
 
     private String constant;

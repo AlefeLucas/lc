@@ -78,7 +78,7 @@ public class Lexer implements Iterator<Token> {
                             tok.append(c);
                             index++;
                             state = 4;
-                        } else if ("\t\n\r\0".contains(c.toString() ) || Character.isWhitespace(c)) {
+                        } else if ("\t\n\r\0".contains(c.toString()) || Character.isWhitespace(c)) {
                             index++;
                             if ("\n\r".contains(c.toString())) {
                                 line++;
@@ -126,7 +126,7 @@ public class Lexer implements Iterator<Token> {
                             tok.append(c);
                             index++;
                         } else {
-                            token = new TokenNumber(tok.toString(), TokenType.NUMERAL_CONSTANT);
+                            token = new TokenNumber(tok.toString(), TokenType.CONSTANT);
                             lexical.put(tok.toString(), token);
                             state = 3;
                             //devolve
@@ -142,7 +142,7 @@ public class Lexer implements Iterator<Token> {
                             index++;
                             state = 6;
                         } else {
-                            token = new TokenNumber(tok.toString(), TokenType.NUMERAL_CONSTANT);
+                            token = new TokenNumber(tok.toString(), TokenType.CONSTANT);
                             lexical.put(tok.toString(), token);
                             state = 3;
                             //devolve
@@ -161,9 +161,11 @@ public class Lexer implements Iterator<Token> {
                     case 7:
                         if (isHexadecimal(c)) {
                             tok.append(c);
+                            token = new TokenNumber(tok.toString(), TokenType.CONSTANT);
                             index++;
+                            state = 3;
                         } else {
-                            token = new TokenNumber(tok.toString(), TokenType.NUMERAL_CONSTANT);
+                            token = new TokenNumber(tok.toString(), TokenType.CONSTANT);
                             lexical.put(tok.toString(), token);
                             state = 3;
                             //devolve
@@ -188,7 +190,7 @@ public class Lexer implements Iterator<Token> {
                             index++;
                             state = 8;
                         } else {
-                            token = new TokenString(tok.toString(), TokenType.STRING_CONSTANT);
+                            token = new TokenString(tok.toString(), TokenType.CONSTANT);
                             lexical.put(tok.toString(), token);
                             state = 3;
                             //devolve
@@ -244,7 +246,12 @@ public class Lexer implements Iterator<Token> {
                         if (c == '/') {
                             index++;
                             state = 0;
+                        } else if (c == '*') {
+                            index++;
                         } else {
+                            if ("\n\r".contains(c.toString())) {
+                                line++;
+                            }
                             index++;
                             state = 13;
                         }
