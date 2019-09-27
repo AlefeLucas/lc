@@ -19,7 +19,7 @@ public class Parser {
             token = lexer.next();
             s();
         }catch (NullPointerException ex){
-            System.err.printf("%d:fim de arquivo não esperado.\n", lexer.getLine());
+            System.err.printf("%d:fim de arquivo nao esperado.\n", lexer.getLine());
         }
     }
 
