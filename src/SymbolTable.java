@@ -21,6 +21,7 @@ public class SymbolTable extends HashMap<String, Token> {
 
     public SymbolTable() {
         super();
+        this.put("main", TokenType.MAIN);
         this.put("const", TokenType.CONST);
         this.put("integer", TokenType.INTEGER);
         this.put("byte", TokenType.BYTE);

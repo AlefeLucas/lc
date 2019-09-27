@@ -11,17 +11,21 @@ public class Lexer implements Iterator<Token> {
     private final char[] source;
     private static final String symbols = "!\"&'(*)+,-./:;<=>?[]_{} \n\r";
     private final SymbolTable symbolTable;
-
+    private int line;
     private int index;
 
     public Lexer(String source) {
         this.source = source.stripTrailing().toCharArray();
-        symbolTable = SymbolTableSingleton.getInstance();
+        this.symbolTable = SymbolTableSingleton.getInstance();
+        this.line = 1;
+    }
+
+    public int getLine() {
+        return line;
     }
 
     @Override
     public boolean hasNext() {
-        //System.out.printf("Index: %d, Length: %d\n", index, source.length);
         return index < source.length;
     }
 
@@ -30,7 +34,7 @@ public class Lexer implements Iterator<Token> {
         int state = 0;
         StringBuilder tok = new StringBuilder();
         Token token = null;
-        int line = 1;
+
         while (state != 3) {
             if (index <= source.length) {
                 Character c = (index < source.length ? source[index] : '\0');
@@ -251,8 +255,6 @@ public class Lexer implements Iterator<Token> {
     private boolean isHexadecimal(Character c) {
         return "abcdefABCDEF".contains(c.toString()) || Character.isDigit(c);
     }
-
-
 
     private boolean isFromAlphabet(char c) {
         return Character.isLetterOrDigit(c) || symbols.contains(c + "");

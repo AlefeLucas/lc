@@ -1,6 +1,7 @@
 @SuppressWarnings("unused")
 public enum TokenType {
 
+    MAIN,
     CONST,
     INTEGER,
     BYTE,
@@ -37,7 +38,6 @@ public enum TokenType {
     NUMERAL_CONSTANT,
     STRING_CONSTANT,
     ID;
-
 
     TokenType() {
     }

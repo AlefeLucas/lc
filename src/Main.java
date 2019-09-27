@@ -25,13 +25,9 @@ public class Main {
                 //TODO arquivos estao ok, prosseguir
                 try {
                     String source = readFile(sourceFile, StandardCharsets.US_ASCII);
-                    Lexer lexer = new Lexer(source);
-                    while (lexer.hasNext()) {
-                        Token next = lexer.next();
-                        if (next != null) {
-                            System.out.println(next);
-                        }
-                    }
+
+                    Parser parser = new Parser(source);
+                    parser.parse();
 
                     System.out.println("\n\n");
                     System.out.println(SymbolTableSingleton.getInstance());
