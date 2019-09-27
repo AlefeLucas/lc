@@ -121,11 +121,6 @@ public class Lexer implements Iterator<Token> {
                             //devolve (não incrementar index)
                         }
                         break;
-                    case 3:
-                        if (token == null) {
-                            System.err.printf("%d:fim de arquivo nao esperado.\n", line);
-                            System.exit(1);
-                        }
                     case 4:
                         if (Character.isDigit(c)) {
                             tok.append(c);
