@@ -8,7 +8,7 @@ public class Parser {
     private Token token;
     private static final TokenType[] FIRST_D = {TokenType.BOOLEAN, TokenType.BYTE, TokenType.CONST, TokenType.INTEGER, TokenType.STRING};
     private static final TokenType[] FIRST_C = {TokenType.ID, TokenType.IF, TokenType.READLN, TokenType.SEMICOLON, TokenType.WHILE, TokenType.WRITE, TokenType.WRITELN};
-    private static final TokenType[] FIRST_E = {TokenType.CONSTANT, TokenType.ID, TokenType.MINUS, TokenType.NOT,  TokenType.OPEN_BRACE, TokenType.PLUS};
+    private static final TokenType[] FIRST_E = {TokenType.CONSTANT, TokenType.ID, TokenType.MINUS, TokenType.NOT, TokenType.OPEN_BRACE, TokenType.PLUS};
 
 
     public Parser(String source) {
@@ -35,42 +35,29 @@ public class Parser {
     }
 
     private void s() {
-        while (Arrays.binarySearch(FIRST_D, token.getValue(), Comparator.comparing(Enum::name)) >= 0) {
+        while (in(token.getValue(), FIRST_D)) {
             d();
         }
         matchToken(TokenType.MAIN);
-        while (Arrays.binarySearch(FIRST_C, token.getValue(), Comparator.comparing(Enum::name)) >= 0) {
+        while (in(token.getValue(), FIRST_C)) {
             c();
         }
         matchToken(TokenType.END);
     }
 
     private void d() {
-        final TokenType[] OP1 = {TokenType.BOOLEAN, TokenType.BYTE, TokenType.INTEGER, TokenType.STRING};
-        if (Arrays.binarySearch(OP1, token.getValue(), Comparator.comparing(Enum::name)) >= 0) {
-            if (token.getValue() == TokenType.INTEGER) {
-                matchToken(TokenType.INTEGER);
-            } else if (token.getValue() == TokenType.STRING) {
-                matchToken(TokenType.STRING);
-            } else if (token.getValue() == TokenType.BOOLEAN) {
-                matchToken(TokenType.BOOLEAN);
-            } else {
-                matchToken(TokenType.BYTE);
-            }
-            matchToken(TokenType.ID);
-            if (token.getValue() == TokenType.ASSIGN) {
-                matchToken(TokenType.ASSIGN);
-                e();
-            }
-            while (token.getValue() == TokenType.COMMA) {
-                matchToken(TokenType.COMMA);
-                matchToken(TokenType.ID);
-                if (token.getValue() == TokenType.ASSIGN) {
-                    matchToken(TokenType.ASSIGN);
-                    e();
-                }
-            }
-            matchToken(TokenType.SEMICOLON);
+        if (token.getValue() == TokenType.INTEGER) {
+            matchToken(TokenType.INTEGER);
+            j();
+        } else if (token.getValue() == TokenType.STRING) {
+            matchToken(TokenType.STRING);
+            j();
+        } else if (token.getValue() == TokenType.BOOLEAN) {
+            matchToken(TokenType.BOOLEAN);
+            j();
+        } else if (token.getValue() == TokenType.BYTE) {
+            matchToken(TokenType.BYTE);
+            j();
         } else {
             matchToken(TokenType.CONST);
             matchToken(TokenType.ID);
@@ -83,31 +70,36 @@ public class Parser {
         }
     }
 
+    private void j() {
+        matchToken(TokenType.ID);
+        if (token.getValue() == TokenType.ASSIGN) {
+            matchToken(TokenType.ASSIGN);
+            e();
+        }
+        while (token.getValue() == TokenType.COMMA) {
+            matchToken(TokenType.COMMA);
+            matchToken(TokenType.ID);
+            if (token.getValue() == TokenType.ASSIGN) {
+                matchToken(TokenType.ASSIGN);
+                e();
+            }
+        }
+        matchToken(TokenType.SEMICOLON);
+    }
+
     private void c() {
-        final TokenType[] FUNCTIONS = {TokenType.READLN, TokenType.WRITE, TokenType.WRITELN};
 
         if (token.getValue() == TokenType.ID) {
             matchToken(TokenType.ID);
             matchToken(TokenType.ASSIGN);
             e();
             matchToken(TokenType.SEMICOLON);
-        } else if (token.getValue() == TokenType.WRITELN || token.getValue() == TokenType.WRITE) {
-            if (token.getValue() == TokenType.WRITE) {
-                matchToken(TokenType.WRITE);
-            } else {
-                matchToken(TokenType.WRITELN);
-            }
-            matchToken(TokenType.OPEN_BRACE);
-            if (Arrays.binarySearch(FIRST_E, token.getValue(), Comparator.comparing(Enum::name)) >= 0) {
-                e();
-                while (token.getValue() == TokenType.COMMA) {
-                    matchToken(TokenType.COMMA);
-                    e();
-                }
-            }
-            matchToken(TokenType.CLOSE_BRACE);
-
-            matchToken(TokenType.SEMICOLON);
+        } else if (token.getValue() == TokenType.WRITE) {
+            matchToken(TokenType.WRITE);
+            k();
+        } else if (token.getValue() == TokenType.WRITELN) {
+            matchToken(TokenType.WRITELN);
+            k();
         } else if (token.getValue() == TokenType.READLN) {
             matchToken(TokenType.READLN);
             matchToken(TokenType.OPEN_BRACE);
@@ -136,33 +128,28 @@ public class Parser {
         }
     }
 
+    private void k() {
+        matchToken(TokenType.OPEN_BRACE);
+        if (in(token.getValue(), FIRST_E)) {
+            e();
+            while (token.getValue() == TokenType.COMMA) {
+                matchToken(TokenType.COMMA);
+                e();
+            }
+        }
+        matchToken(TokenType.CLOSE_BRACE);
+
+        matchToken(TokenType.SEMICOLON);
+    }
+
+    private static boolean in(TokenType token, TokenType[] orderedByName) {
+        return Arrays.binarySearch(orderedByName, token, Comparator.comparing(Enum::name)) >= 0;
+    }
 
     private void e() {
         f();
-        while (token.getValue() == TokenType.OR) {
-            matchToken(TokenType.OR);
-            f();
-        }
-    }
-
-    private void f() {
-        if (token.getValue() == TokenType.NOT) {
-            matchToken(TokenType.NOT);
-        }
-        g();
-        while (token.getValue() == TokenType.AND) {
-            matchToken(TokenType.AND);
-            if (token.getValue() == TokenType.NOT) {
-                matchToken(TokenType.NOT);
-            }
-            g();
-        }
-    }
-
-    private void g() {
-        h();
         final TokenType[] LOGIC_OP = {TokenType.EQUAL, TokenType.GREATER, TokenType.GREATER_OR_EQUAL, TokenType.LESS, TokenType.LESS_OR_EQUAL, TokenType.NOT_EQUAL};
-        while (Arrays.binarySearch(LOGIC_OP, token.getValue(), Comparator.comparing(Enum::name)) >= 0) {
+        while (in(token.getValue(), LOGIC_OP)) {
             if (token.getValue() == TokenType.EQUAL) {
                 matchToken(TokenType.EQUAL);
             } else if (token.getValue() == TokenType.NOT_EQUAL) {
@@ -176,40 +163,53 @@ public class Parser {
             } else {
                 matchToken(TokenType.GREATER_OR_EQUAL);
             }
-            h();
+            f();
         }
     }
 
-    private void h() {
+    private void f() {
         if (token.getValue() == TokenType.PLUS) {
             matchToken(TokenType.PLUS);
         } else if (token.getValue() == TokenType.MINUS) {
             matchToken(TokenType.MINUS);
         }
-        j();
-        while (token.getValue() == TokenType.PLUS || token.getValue() == TokenType.MINUS) {
+        g();
+        final TokenType[] OP = {TokenType.MINUS, TokenType.OR, TokenType.PLUS};
+        while (in(token.getValue(), OP)) {
             if (token.getValue() == TokenType.PLUS) {
                 matchToken(TokenType.PLUS);
-            } else {
+            } else if (token.getValue() == TokenType.MINUS) {
                 matchToken(TokenType.MINUS);
+            } else {
+                matchToken(TokenType.OR);
             }
-            j();
+            g();
         }
     }
 
-    private void j() {
-        k();
-        while (token.getValue() == TokenType.MULTIPLY || token.getValue() == TokenType.DIVIDE) {
+    private void g() {
+        h();
+        final TokenType[] OP = {TokenType.AND, TokenType.DIVIDE, TokenType.MULTIPLY};
+        while (in(token.getValue(), OP)) {
             if (token.getValue() == TokenType.MULTIPLY) {
                 matchToken(TokenType.MULTIPLY);
-            } else {
+            } else if (token.getValue() == TokenType.DIVIDE) {
                 matchToken(TokenType.DIVIDE);
+            } else {
+                matchToken(TokenType.AND);
             }
-            k();
+            h();
         }
     }
 
-    private void k() {
+    private void h() {
+        if (token.getValue() == TokenType.NOT) {
+            matchToken(TokenType.NOT);
+        }
+        i();
+    }
+
+    private void i() {
         if (token.getValue() == TokenType.ID) {
             matchToken(TokenType.ID);
         } else if (token.getValue() == TokenType.CONSTANT) {
@@ -224,7 +224,7 @@ public class Parser {
     private void l() {
         if (token.getValue() == TokenType.BEGIN) {
             matchToken(TokenType.BEGIN);
-            while (Arrays.binarySearch(FIRST_C, token.getValue(), Comparator.comparing(Enum::name)) >= 0) {
+            while (in(token.getValue(), FIRST_C)) {
                 c();
             }
             matchToken(TokenType.END);
