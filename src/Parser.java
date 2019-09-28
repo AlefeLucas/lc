@@ -34,6 +34,9 @@ public class Parser {
         }
     }
 
+    /**
+     *  S  =>  {D}main {C} end
+     */
     private void s() {
         while (in(token.getValue(), FIRST_D)) {
             d();
