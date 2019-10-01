@@ -1,9 +1,9 @@
 @SuppressWarnings("WeakerAccess")
-public class TokenInteger extends TokenConstant<Integer>{
+public class TokenInteger extends TokenConstant<Short>{
 
     public TokenInteger(String lexeme) {
         super(lexeme, ConstantType.INTEGER);
-        this.setConstant(Integer.parseInt(lexeme));
+        this.setConstant(Short.parseShort(lexeme));
     }
 
 }

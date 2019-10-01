@@ -165,6 +165,7 @@ public class Lexer implements Iterator<Token> {
                         if (isHexadecimal(c)) {
                             lex.append(c);
                             token = new TokenByte(lex.toString());
+                            lexicalRegister.put(lex.toString(), (TokenConstant) token);
                             index++;
                             state = 3;
                         } else {

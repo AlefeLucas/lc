@@ -79,8 +79,8 @@ public class Parser {
             matchToken(TokenType.ASSIGN);
             if(token.getValue() == TokenType.MINUS){
                 matchToken(TokenType.MINUS);
-                matchToken(TokenType.CONSTANT);
             }
+            matchToken(TokenType.CONSTANT);
         }
         while (token.getValue() == TokenType.COMMA) {
             matchToken(TokenType.COMMA);
@@ -89,8 +89,8 @@ public class Parser {
                 matchToken(TokenType.ASSIGN);
                 if(token.getValue() == TokenType.MINUS){
                     matchToken(TokenType.MINUS);
-                    matchToken(TokenType.CONSTANT);
                 }
+                matchToken(TokenType.CONSTANT);
             }
         }
         matchToken(TokenType.SEMICOLON);

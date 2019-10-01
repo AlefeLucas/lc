@@ -28,7 +28,7 @@ public class LC {
                     Parser parser = new Parser(source);
                     parser.parse();
 
-                    //System.out.println(SymbolTableSingleton.getInstance());
+                    System.out.println(LexicalSingleton.getInstance());
                 } catch (IOException e) {
                     System.out.println("Erro: falhou ao ler arquivo fonte.\n" + e.getMessage());
                     e.printStackTrace();

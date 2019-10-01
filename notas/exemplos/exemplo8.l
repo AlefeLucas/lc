@@ -1,9 +1,9 @@
 /* Erro token nao esperado */
 
-integer n=-1;
+integer n=7+8;
 string nome;
 boolean naoTerminou;
-const MAXITER=10;
+const MAXITER=0hff;
 
 /* Programa Principal */
 main

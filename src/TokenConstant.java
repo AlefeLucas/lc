@@ -15,7 +15,7 @@ public abstract class TokenConstant<T> extends Token{
 
     @Override
     public String toString() {
-        return String.format("<\"%s\", %s, %s>", getKey(), getValue().name(), getConstant());
+        return String.format("<\"%s\", %s, %s, %s>", getKey(), getValue().name(), getConstant(), getType().name());
     }
 
     public ConstantType getType() {
