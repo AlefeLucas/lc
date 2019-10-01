@@ -77,14 +77,20 @@ public class Parser {
         matchToken(TokenType.ID);
         if (token.getValue() == TokenType.ASSIGN) {
             matchToken(TokenType.ASSIGN);
-            e();
+            if(token.getValue() == TokenType.MINUS){
+                matchToken(TokenType.MINUS);
+                matchToken(TokenType.CONSTANT);
+            }
         }
         while (token.getValue() == TokenType.COMMA) {
             matchToken(TokenType.COMMA);
             matchToken(TokenType.ID);
             if (token.getValue() == TokenType.ASSIGN) {
                 matchToken(TokenType.ASSIGN);
-                e();
+                if(token.getValue() == TokenType.MINUS){
+                    matchToken(TokenType.MINUS);
+                    matchToken(TokenType.CONSTANT);
+                }
             }
         }
         matchToken(TokenType.SEMICOLON);
@@ -191,7 +197,7 @@ public class Parser {
     }
 
     private void g() {
-        h();
+        i();
         final TokenType[] OP = {TokenType.AND, TokenType.DIVIDE, TokenType.MULTIPLY};
         while (in(token.getValue(), OP)) {
             if (token.getValue() == TokenType.MULTIPLY) {
@@ -201,15 +207,8 @@ public class Parser {
             } else {
                 matchToken(TokenType.AND);
             }
-            h();
+            i();
         }
-    }
-
-    private void h() {
-        if (token.getValue() == TokenType.NOT) {
-            matchToken(TokenType.NOT);
-        }
-        i();
     }
 
     private void i() {
@@ -217,6 +216,9 @@ public class Parser {
             matchToken(TokenType.ID);
         } else if (token.getValue() == TokenType.CONSTANT) {
             matchToken(TokenType.CONSTANT);
+        } else if(token.getValue() == TokenType.NOT){
+            matchToken(TokenType.NOT);
+            matchToken(TokenType.ID);
         } else {
             matchToken(TokenType.OPEN_BRACE);
             e();

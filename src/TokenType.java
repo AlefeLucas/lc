@@ -37,8 +37,4 @@ public enum TokenType {
     CONSTANT,
     ID;
 
-    TokenType() {
-    }
-
-
 }

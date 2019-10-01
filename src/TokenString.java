@@ -1,22 +1,12 @@
 /**
  * Teste
  */
-public class TokenString extends Token implements TokenConstant<String> {
+@SuppressWarnings("WeakerAccess")
+public class TokenString extends TokenConstant<String> {
 
-    private String constant;
-
-    public TokenString(String lexeme, TokenType token) {
-        super(lexeme, token);
-
-        this.constant = lexeme.substring(1, lexeme.length() -1).replaceAll("''", "'");
+    public TokenString(String lexeme) {
+        super(lexeme, ConstantType.STRING);
+        this.setConstant(lexeme.substring(1, lexeme.length() - 1).replaceAll("''", "'"));
     }
 
-    public String getConstant() {
-        return constant;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("<\"%s\", %s, \"%s\">", getKey(), getValue().name(), getConstant());
-    }
 }

@@ -1,13 +1,13 @@
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused","WeakerAccess"})
 public abstract class LexicalSingleton {
 
-    private static Register lexical;
+    private static LexicalRegister lexicalRegister;
 
-    public static Register getInstance() {
-        if (lexical == null) {
-            lexical = new Register();
+    public static LexicalRegister getInstance() {
+        if (lexicalRegister == null) {
+            lexicalRegister = new LexicalRegister();
         }
 
-        return lexical;
+        return lexicalRegister;
     }
 }

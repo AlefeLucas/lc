@@ -28,7 +28,7 @@ public class LC {
                     Parser parser = new Parser(source);
                     parser.parse();
 
-                    System.out.println(SymbolTableSingleton.getInstance());
+                    //System.out.println(SymbolTableSingleton.getInstance());
                 } catch (IOException e) {
                     System.out.println("Erro: falhou ao ler arquivo fonte.\n" + e.getMessage());
                     e.printStackTrace();
@@ -40,10 +40,8 @@ public class LC {
         }
     }
 
-    public static String readFile(File file, Charset charset) throws IOException {
-
+    private static String readFile(File file, Charset charset) throws IOException {
         return Files.readString(file.toPath(), charset);
-
     }
 
 

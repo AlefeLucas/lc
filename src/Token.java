@@ -1,5 +1,6 @@
 import java.util.Map;
 
+@SuppressWarnings("WeakerAccess")
 public class Token implements Map.Entry<String, TokenType>{
     private String lexeme;
     private TokenType token;

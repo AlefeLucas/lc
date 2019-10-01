@@ -7,15 +7,15 @@ import java.util.Iterator;
 public class Lexer implements Iterator<Token> {
     private final char[] source;
     private static final String symbols = "!\"&'(*)+,-./:;<=>?[]_{} \n\r\t";
-    private final Register symbolTable;
-    private final Register lexical;
+    private final SymbolTable symbolTable;
+    private final LexicalRegister lexicalRegister;
     private int line;
     private int index;
 
     public Lexer(String source) {
         this.source = source.stripTrailing().replace("\r\n", "\n").toCharArray();
         this.symbolTable = SymbolTableSingleton.getInstance();
-        this.lexical = LexicalSingleton.getInstance();
+        this.lexicalRegister = LexicalSingleton.getInstance();
         this.line = 1;
     }
 
@@ -88,6 +88,7 @@ public class Lexer implements Iterator<Token> {
                             index++;
                             state = 12;
                         } else {
+                            lex.append(c);
                             System.err.printf("%d:lexema nao identificado [%s]\n", line, lex.toString());
                             System.exit(1);
                         }
@@ -101,6 +102,7 @@ public class Lexer implements Iterator<Token> {
                             index++;
                             state = 2;
                         } else {
+                            lex.append(c);
                             System.err.printf("%d:lexema nao identificado [%s]\n", line, lex.toString());
                             System.exit(1);
                         }
@@ -126,8 +128,8 @@ public class Lexer implements Iterator<Token> {
                             lex.append(c);
                             index++;
                         } else {
-                            token = new TokenNumber(lex.toString(), TokenType.CONSTANT);
-                            lexical.put(lex.toString(), token);
+                            token = new TokenInteger(lex.toString());
+                            lexicalRegister.put(lex.toString(), (TokenConstant) token);
                             state = 3;
                             //devolve
                         }
@@ -142,8 +144,8 @@ public class Lexer implements Iterator<Token> {
                             index++;
                             state = 6;
                         } else {
-                            token = new TokenNumber(lex.toString(), TokenType.CONSTANT);
-                            lexical.put(lex.toString(), token);
+                            token = new TokenInteger(lex.toString());
+                            lexicalRegister.put(lex.toString(), (TokenConstant) token);
                             state = 3;
                             //devolve
                         }
@@ -154,6 +156,7 @@ public class Lexer implements Iterator<Token> {
                             index++;
                             state = 7;
                         } else {
+                            lex.append(c);
                             System.err.printf("%d:lexema nao identificado [%s]\n", line, lex.toString());
                             System.exit(1);
                         }
@@ -161,12 +164,12 @@ public class Lexer implements Iterator<Token> {
                     case 7:
                         if (isHexadecimal(c)) {
                             lex.append(c);
-                            token = new TokenNumber(lex.toString(), TokenType.CONSTANT);
+                            token = new TokenByte(lex.toString());
                             index++;
                             state = 3;
                         } else {
-                            token = new TokenNumber(lex.toString(), TokenType.CONSTANT);
-                            lexical.put(lex.toString(), token);
+                            token = new TokenByte(lex.toString());
+                            lexicalRegister.put(lex.toString(), (TokenConstant) token);
                             state = 3;
                             //devolve
                         }
@@ -180,6 +183,7 @@ public class Lexer implements Iterator<Token> {
                             lex.append(c);
                             index++;
                         } else {
+                            lex.append(c);
                             System.err.printf("%d:lexema nao identificado [%s]\n", line, lex.toString());
                             System.exit(1);
                         }
@@ -190,24 +194,19 @@ public class Lexer implements Iterator<Token> {
                             index++;
                             state = 8;
                         } else {
-                            token = new TokenString(lex.toString(), TokenType.CONSTANT);
-                            lexical.put(lex.toString(), token);
+                            token = new TokenString(lex.toString());
+                            lexicalRegister.put(lex.toString(), (TokenConstant) token);
                             state = 3;
                             //devolve
                         }
                         break;
                     case 10:
-                        /* TODO Cabe refatoracao? */
                         if (c == '=') {
                             lex.append(c);
                             index++;
-                            token = symbolTable.get(lex.toString());
-                            state = 3;
-                        } else {
-                            token = symbolTable.get(lex.toString());
-                            state = 3;
-                            //devolve
                         }
+                        token = symbolTable.get(lex.toString());
+                        state = 3;
                         break;
                     case 11:
                         if (c == '=') {
@@ -216,6 +215,7 @@ public class Lexer implements Iterator<Token> {
                             token = symbolTable.get(lex.toString());
                             state = 3;
                         } else {
+                            lex.append(c);
                             System.err.printf("%d:lexema nao identificado [%s]\n", line, lex.toString());
                             System.exit(1);
                         }

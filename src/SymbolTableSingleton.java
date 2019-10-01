@@ -1,11 +1,12 @@
-@SuppressWarnings("unused")
+
+@SuppressWarnings({"unused","WeakerAccess"})
 public abstract class SymbolTableSingleton {
 
-    private static Register symbolTable;
+    private static SymbolTable symbolTable;
 
-    public static Register getInstance() {
+    public static SymbolTable getInstance() {
         if (symbolTable == null) {
-            symbolTable = new Register();
+            symbolTable = new SymbolTable();
             symbolTable.put("main", TokenType.MAIN);
             symbolTable.put("const", TokenType.CONST);
             symbolTable.put("integer", TokenType.INTEGER);
@@ -21,8 +22,8 @@ public abstract class SymbolTableSingleton {
             symbolTable.put("readln", TokenType.READLN);
             symbolTable.put("write", TokenType.WRITE);
             symbolTable.put("writeln", TokenType.WRITELN);
-            symbolTable.put("true", new TokenBoolean("true", TokenType.CONSTANT));
-            symbolTable.put("false", new TokenBoolean("false", TokenType.CONSTANT));
+            symbolTable.put("true", new TokenBoolean("true"));
+            symbolTable.put("false", new TokenBoolean("false"));
             symbolTable.put("and", TokenType.AND);
             symbolTable.put("or", TokenType.OR);
             symbolTable.put("not", TokenType.NOT);

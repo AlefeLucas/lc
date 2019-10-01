@@ -1,14 +1,7 @@
 import java.util.HashMap;
 
-/**
-
- */
-@SuppressWarnings({"WeakerAccess"})
-public class Register extends HashMap<String, Token> {
-
-    public Token put(String key, TokenType value) {
-        return this.put(key, new Token(key, value));
-    }
+@SuppressWarnings({"unused"})
+public class LexicalRegister extends HashMap<String, TokenConstant> {
 
     @Override
     public String toString() {
