@@ -17,3 +17,6 @@ main
 		naoTerminou=n<MAXITER;
 	end
 end
+
+
+

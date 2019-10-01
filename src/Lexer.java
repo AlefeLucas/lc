@@ -1,7 +1,9 @@
 import java.util.Iterator;
 
 /**
- *
+ * Analisador Lexico - implementacao do automato;
+ * 15 estados;
+ * Dado o comportamento iterativo do analisador lexico, eh implementado como um Iterator de Token;
  */
 @SuppressWarnings("WeakerAccess")
 public class Lexer implements Iterator<Token> {
@@ -11,40 +13,59 @@ public class Lexer implements Iterator<Token> {
     private final LexicalRegister lexicalRegister;
     private int line;
     private int index;
+    private static final int INITIAL = 0;
+    private static final int FINAL = 3;
 
+    /**
+     * Construtor do analisador lexico - pre-processa o codigo fonte, inicializa a tabela de simbolos e registro lexico.
+     *
+     * @param source string contendo o codigo fonte
+     */
     public Lexer(String source) {
+        // remove espacos e quebras de linha no final do codigo; substitui \r\n por \n, ja que o windows codifica cada quebra de linha como \r\n;
         this.source = source.stripTrailing().replace("\r\n", "\n").toCharArray();
         this.symbolTable = SymbolTableSingleton.getInstance();
-        this.lexicalRegister = LexicalSingleton.getInstance();
+        this.lexicalRegister = LexicalRegisterSingleton.getInstance();
         this.line = 1;
     }
 
+    /**
+     * Obtem o numero da linha atual em que se encontra o analisador lexico.
+     *
+     * @return linha atual
+     */
     public int getLine() {
         return line;
     }
 
+    /**
+     * Diz se existe um proximo token
+     *
+     * @return true se houve um proximo token, false caso contrario
+     */
     @Override
     public boolean hasNext() {
         return index < source.length;
     }
 
+    /**
+     * Realiza os passos do automato, do estado inicial ate o final, para retornar o proximo token.
+     *
+     * @return o proximo token
+     */
     @Override
     public Token next() {
-        int state = 0;
-        StringBuilder lex = new StringBuilder();
+        int state = INITIAL;
+        StringBuilder lex = new StringBuilder(); //usando string builder por razoes performaticas
         Token token = null;
 
-        while (state != 3) {
+        while (state != FINAL) {
             if (index <= source.length) {
-                Character c = (index < source.length ? source[index] : '\0');
-
-                if (!isFromAlphabet(c) && c != '\0') {
-                    System.err.printf("%d:caractere invalido.\n", line);
-                    System.exit(1);
-                }
+                Character c = getCurrentChar();
+                assertValidChar(c);
 
                 switch (state) {
-                    case 0:
+                    case INITIAL:
                         if (c == '!') {
                             lex.append(c); //lex += c
                             index++;
@@ -57,7 +78,7 @@ public class Lexer implements Iterator<Token> {
                             lex.append(c);
                             index++;
                             token = symbolTable.get(lex.toString());
-                            state = 3;
+                            state = FINAL;
                         } else if (c == '\'') {
                             lex.append(c);
                             index++;
@@ -78,7 +99,7 @@ public class Lexer implements Iterator<Token> {
                             lex.append(c);
                             index++;
                             state = 4;
-                        } else if ("\t\n\r\0".contains(c.toString()) || Character.isWhitespace(c)) {
+                        } else if ("\t\n\r".contains(c.toString()) || Character.isWhitespace(c)) {
                             index++;
                             if ("\n\r".contains(c.toString())) {
                                 line++;
@@ -111,7 +132,7 @@ public class Lexer implements Iterator<Token> {
                             lex.append(c);
                             index++;
                         } else {
-                            state = 3;
+                            state = FINAL;
                             Token t = symbolTable.get(lex.toString());
                             if (t == null) {
                                 symbolTable.put(lex.toString(), TokenType.ID);
@@ -129,7 +150,7 @@ public class Lexer implements Iterator<Token> {
                         } else {
                             token = new TokenInteger(lex.toString());
                             lexicalRegister.put(lex.toString(), (TokenConstant) token);
-                            state = 3;
+                            state = FINAL;
                             //devolve
                         }
                         break;
@@ -145,7 +166,7 @@ public class Lexer implements Iterator<Token> {
                         } else {
                             token = new TokenInteger(lex.toString());
                             lexicalRegister.put(lex.toString(), (TokenConstant) token);
-                            state = 3;
+                            state = FINAL;
                             //devolve
                         }
                         break;
@@ -165,11 +186,11 @@ public class Lexer implements Iterator<Token> {
                             token = new TokenByte(lex.toString());
                             lexicalRegister.put(lex.toString(), (TokenConstant) token);
                             index++;
-                            state = 3;
+                            state = FINAL;
                         } else {
                             token = new TokenByte(lex.toString());
                             lexicalRegister.put(lex.toString(), (TokenConstant) token);
-                            state = 3;
+                            state = FINAL;
                             //devolve
                         }
                         break;
@@ -194,7 +215,7 @@ public class Lexer implements Iterator<Token> {
                         } else {
                             token = new TokenString(lex.toString());
                             lexicalRegister.put(lex.toString(), (TokenConstant) token);
-                            state = 3;
+                            state = FINAL;
                             //devolve
                         }
                         break;
@@ -204,14 +225,14 @@ public class Lexer implements Iterator<Token> {
                             index++;
                         }
                         token = symbolTable.get(lex.toString());
-                        state = 3;
+                        state = FINAL;
                         break;
                     case 11:
                         if (c == '=') {
                             lex.append(c);
                             index++;
                             token = symbolTable.get(lex.toString());
-                            state = 3;
+                            state = FINAL;
                         } else {
                             System.err.printf("%d:lexema nao identificado [%s]\n", line, lex.toString());
                             System.exit(1);
@@ -224,7 +245,7 @@ public class Lexer implements Iterator<Token> {
                             state = 13;
                         } else {
                             token = symbolTable.get(lex.toString());
-                            state = 3;
+                            state = FINAL;
                             //devolve
                         }
                         break;
@@ -242,7 +263,7 @@ public class Lexer implements Iterator<Token> {
                     case 14:
                         if (c == '/') {
                             index++;
-                            state = 0;
+                            state = INITIAL;
                         } else if (c == '*') {
                             index++;
                         } else {
@@ -262,14 +283,39 @@ public class Lexer implements Iterator<Token> {
         return token;
     }
 
+    /**
+     * Obtem o caractere atual; E necessario avancar um caractere alem do ultimo do
+     * arquivo para identificar o ultimo lexema, portanto um espaco e adicionado.
+     *
+     * @return caractere atual
+     */
+    private char getCurrentChar() {
+        return index < source.length ? source[index] : ' ';
+    }
+
+    /**
+     * Se o caractere nao for permitido em um arquivo fonte, reporta erro e finaliza o programa
+     *
+     * @param c caractere
+     */
+    private void assertValidChar(Character c) {
+        if (!isValidChar(c)) {
+            System.err.printf("%d:caractere invalido.\n", line);
+            System.exit(1);
+        }
+    }
+
     private boolean isHexadecimal(Character c) {
         return "abcdefABCDEF".contains(c.toString()) || Character.isDigit(c);
     }
 
-    private boolean isFromAlphabet(char c) {
+    private boolean isValidChar(char c) {
         return Character.isLetterOrDigit(c) || symbols.contains(c + "");
     }
 
+    /**
+     * Dummy - exigido pelo Iterator mas sem uso pratico nessa aplicacao
+     */
     @Override
     public void remove() {
 

@@ -1,6 +1,35 @@
 import java.util.Arrays;
 import java.util.Comparator;
 
+/**
+ * Analisador sintatico - Implementa a gramatica da linguagem. Cada simbolo nao terminal
+ * tem seu metodo e cada simbolo terminal eh casado com o matchToken.
+ *
+ * S  =>  {D}main {C} end
+ * D  =>  integer J|
+ *        boolean J|
+ *        string J|
+ *        byte J|
+ *        const id=[-]constant;
+ * J  =>  id[=[-]constant]{,id[=[-]constant]};
+ * C  =>  id=E;|
+ *        write K|
+ *        writeln K|
+ *        readln”(“id”)”;|
+ *  	  while”(“E”)” L|
+ *        if”(“E”)” then L [else L]|
+ *        ;
+ * K  =>  ”(“[E{,E}]”)”);
+ * E  =>  F{(==|!=|<|>|<=|>=)F}
+ * F  =>  [+|-]G{(+|-|or)G}
+ * G  =>  H{(*|/|and)H}
+ * H  =>  id|
+ *        constant|
+ *        “(“E”)”|
+ *        not H
+ * L  =>  C|
+ *        begin {C} end
+ */
 @SuppressWarnings("WeakerAccess")
 public class Parser {
 
@@ -10,20 +39,34 @@ public class Parser {
     private static final TokenType[] FIRST_C = {TokenType.ID, TokenType.IF, TokenType.READLN, TokenType.SEMICOLON, TokenType.WHILE, TokenType.WRITE, TokenType.WRITELN};
     private static final TokenType[] FIRST_E = {TokenType.CONSTANT, TokenType.ID, TokenType.MINUS, TokenType.NOT, TokenType.OPEN_BRACE, TokenType.PLUS};
 
-
+    /**
+     * Construtor do analisador sintatico - cria e guarda uma instancia do analisador lexico;
+     *
+     * @param source string contendo o codigo fonte
+     */
     public Parser(String source) {
         lexer = new Lexer(source);
     }
 
+    /**
+     * "Programa principal" do analisador sintatico - obtem o primeiro
+     * token do analisador lexico e chama o simbolo inicial.
+     */
     public void parse() {
         try {
             token = lexer.next();
             s();
         } catch (NullPointerException ex) {
             System.err.printf("%d:fim de arquivo nao esperado.\n", lexer.getLine());
+            System.exit(1);
         }
     }
 
+    /**
+     * "Casa token" - verifica se o token atual eh o token esperado pela gramatica.
+     *
+     * @param expectedToken token esperado
+     */
     private void matchToken(TokenType expectedToken) {
         if (expectedToken.equals(token.getValue())) {
             token = lexer.next();
@@ -35,7 +78,19 @@ public class Parser {
     }
 
     /**
-     *  S  =>  {D}main {C} end
+     * Verifica se o dado tipo de token pertence a dada lista ordenada de tokens;
+     * Usa pesquisa binaria.
+     *
+     * @param token token chave de busca
+     * @param orderedByName lista ordenada de token
+     * @return true se presente, false caso contrario
+     */
+    private static boolean in(TokenType token, TokenType[] orderedByName) {
+        return Arrays.binarySearch(orderedByName, token, Comparator.comparing(Enum::name)) >= 0;
+    }
+
+    /**
+     * S  =>  {D}main {C} end
      */
     private void s() {
         while (in(token.getValue(), FIRST_D)) {
@@ -48,6 +103,13 @@ public class Parser {
         matchToken(TokenType.END);
     }
 
+    /**
+     * D  =>    integer J|
+     *          boolean J|
+     *          string J|
+     *          byte J|
+     *          const id=[-]constant;
+     */
     private void d() {
         if (token.getValue() == TokenType.INTEGER) {
             matchToken(TokenType.INTEGER);
@@ -73,11 +135,14 @@ public class Parser {
         }
     }
 
+    /**
+     * J  =>  id[=[-]constant]{,id[=[-]constant]};
+     */
     private void j() {
         matchToken(TokenType.ID);
         if (token.getValue() == TokenType.ASSIGN) {
             matchToken(TokenType.ASSIGN);
-            if(token.getValue() == TokenType.MINUS){
+            if (token.getValue() == TokenType.MINUS) {
                 matchToken(TokenType.MINUS);
             }
             matchToken(TokenType.CONSTANT);
@@ -87,7 +152,7 @@ public class Parser {
             matchToken(TokenType.ID);
             if (token.getValue() == TokenType.ASSIGN) {
                 matchToken(TokenType.ASSIGN);
-                if(token.getValue() == TokenType.MINUS){
+                if (token.getValue() == TokenType.MINUS) {
                     matchToken(TokenType.MINUS);
                 }
                 matchToken(TokenType.CONSTANT);
@@ -96,6 +161,15 @@ public class Parser {
         matchToken(TokenType.SEMICOLON);
     }
 
+    /**
+     * C  =>  id=E;|
+     *        write K|
+     *        writeln K|
+     *        readln”(“id”)”;|
+     *        while”(“E”)” L|
+     *        if”(“E”)” then L [else L]|
+     *        ;
+     */
     private void c() {
 
         if (token.getValue() == TokenType.ID) {
@@ -137,6 +211,9 @@ public class Parser {
         }
     }
 
+    /**
+     * K  =>  ”(“[E{,E}]”)”);
+     */
     private void k() {
         matchToken(TokenType.OPEN_BRACE);
         if (in(token.getValue(), FIRST_E)) {
@@ -151,10 +228,9 @@ public class Parser {
         matchToken(TokenType.SEMICOLON);
     }
 
-    private static boolean in(TokenType token, TokenType[] orderedByName) {
-        return Arrays.binarySearch(orderedByName, token, Comparator.comparing(Enum::name)) >= 0;
-    }
-
+    /**
+     * E  =>  F{(==|!=|<|>|<=|>=)F}
+     */
     private void e() {
         f();
         final TokenType[] LOGIC_OP = {TokenType.EQUAL, TokenType.GREATER, TokenType.GREATER_OR_EQUAL, TokenType.LESS, TokenType.LESS_OR_EQUAL, TokenType.NOT_EQUAL};
@@ -176,6 +252,9 @@ public class Parser {
         }
     }
 
+    /**
+     * F  =>  [+|-]G{(+|-|or)G}
+     */
     private void f() {
         if (token.getValue() == TokenType.PLUS) {
             matchToken(TokenType.PLUS);
@@ -196,8 +275,11 @@ public class Parser {
         }
     }
 
+    /**
+     * G  =>  H{(*|/|and)H}
+     */
     private void g() {
-        i();
+        h();
         final TokenType[] OP = {TokenType.AND, TokenType.DIVIDE, TokenType.MULTIPLY};
         while (in(token.getValue(), OP)) {
             if (token.getValue() == TokenType.MULTIPLY) {
@@ -207,16 +289,22 @@ public class Parser {
             } else {
                 matchToken(TokenType.AND);
             }
-            i();
+            h();
         }
     }
 
-    private void i() {
+    /**
+     * H  =>  id|
+     *        constant|
+     *        “(“E”)”|
+     *        not H
+     */
+    private void h() {
         if (token.getValue() == TokenType.ID) {
             matchToken(TokenType.ID);
         } else if (token.getValue() == TokenType.CONSTANT) {
             matchToken(TokenType.CONSTANT);
-        } else if(token.getValue() == TokenType.NOT){
+        } else if (token.getValue() == TokenType.NOT) {
             matchToken(TokenType.NOT);
             matchToken(TokenType.ID);
         } else {
@@ -226,6 +314,10 @@ public class Parser {
         }
     }
 
+    /**
+     * L  =>  C|
+     *        begin {C} end
+     */
     private void l() {
         if (token.getValue() == TokenType.BEGIN) {
             matchToken(TokenType.BEGIN);

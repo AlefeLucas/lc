@@ -1,3 +1,6 @@
+/**
+ * Enumera todos os tipos de token de acordo com o alfabeto da linguagem
+ */
 @SuppressWarnings("unused")
 public enum TokenType {
 
