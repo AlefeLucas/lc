@@ -102,7 +102,6 @@ public class Lexer implements Iterator<Token> {
                             index++;
                             state = 2;
                         } else {
-                            lex.append(c);
                             System.err.printf("%d:lexema nao identificado [%s]\n", line, lex.toString());
                             System.exit(1);
                         }
@@ -156,7 +155,6 @@ public class Lexer implements Iterator<Token> {
                             index++;
                             state = 7;
                         } else {
-                            lex.append(c);
                             System.err.printf("%d:lexema nao identificado [%s]\n", line, lex.toString());
                             System.exit(1);
                         }
@@ -184,7 +182,6 @@ public class Lexer implements Iterator<Token> {
                             lex.append(c);
                             index++;
                         } else {
-                            lex.append(c);
                             System.err.printf("%d:lexema nao identificado [%s]\n", line, lex.toString());
                             System.exit(1);
                         }
@@ -216,7 +213,6 @@ public class Lexer implements Iterator<Token> {
                             token = symbolTable.get(lex.toString());
                             state = 3;
                         } else {
-                            lex.append(c);
                             System.err.printf("%d:lexema nao identificado [%s]\n", line, lex.toString());
                             System.exit(1);
                         }
