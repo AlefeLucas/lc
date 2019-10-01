@@ -4,6 +4,8 @@
 @SuppressWarnings("unused")
 public enum TokenType {
 
+    ID,
+    CONSTANT,
     MAIN,
     CONST,
     INTEGER,
@@ -28,7 +30,6 @@ public enum TokenType {
     EQUAL,
     LESS,
     GREATER,
-    ASSIGN,
     PLUS,    
     MINUS,
     MULTIPLY,
@@ -37,7 +38,6 @@ public enum TokenType {
     SEMICOLON,
     OPEN_BRACE,
     CLOSE_BRACE,
-    CONSTANT,
-    ID;
+    ASSIGN;
 
 }
