@@ -15,17 +15,17 @@ import java.util.Comparator;
  * C  =>  id=E;|
  *        write K|
  *        writeln K|
- *        readln”(“id”)”;|
- *  	  while”(“E”)” L|
- *        if”(“E”)” then L [else L]|
+ *        readln"("id")";|
+ *  	  while"("E")" L|
+ *        if"("E")" then L [else L]|
  *        ;
- * K  =>  ”(“[E{,E}]”)”);
+ * K  =>  "("[E{,E}]")");
  * E  =>  F{(==|!=|<|>|<=|>=)F}
  * F  =>  [+|-]G{(+|-|or)G}
  * G  =>  H{(*|/|and)H}
  * H  =>  id|
  *        constant|
- *        “(“E”)”|
+ *        "("E")"|
  *        not H
  * L  =>  C|
  *        begin {C} end
@@ -165,9 +165,9 @@ public class Parser {
      * C  =>  id=E;|
      *        write K|
      *        writeln K|
-     *        readln”(“id”)”;|
-     *        while”(“E”)” L|
-     *        if”(“E”)” then L [else L]|
+     *        readln"("id")";|
+     *        while"("E")" L|
+     *        if"("E")" then L [else L]|
      *        ;
      */
     private void c() {
@@ -212,7 +212,7 @@ public class Parser {
     }
 
     /**
-     * K  =>  ”(“[E{,E}]”)”);
+     * K  =>  "("[E{,E}]")");
      */
     private void k() {
         matchToken(TokenType.OPEN_BRACE);
@@ -296,7 +296,7 @@ public class Parser {
     /**
      * H  =>  id|
      *        constant|
-     *        “(“E”)”|
+     *        "("E")"|
      *        not H
      */
     private void h() {
