@@ -1,120 +1,142 @@
 import java.util.Iterator;
 
 /**
- *
+ * Analisador Lexico - implementacao do automato;
+ * 15 estados;
+ * Dado o comportamento iterativo do analisador lexico, eh implementado como um Iterator de Token;
  */
 @SuppressWarnings("WeakerAccess")
 public class Lexer implements Iterator<Token> {
     private final char[] source;
     private static final String symbols = "!\"&'(*)+,-./:;<=>?[]_{} \n\r\t";
-    private final Register symbolTable;
-    private final Register lexical;
+    private final SymbolTable symbolTable;
+    private final LexicalRegister lexicalRegister;
     private int line;
     private int index;
+    private static final int INITIAL = 0;
+    private static final int FINAL = 3;
 
+    /**
+     * Construtor do analisador lexico - pre-processa o codigo fonte, inicializa a tabela de simbolos e registro lexico.
+     *
+     * @param source string contendo o codigo fonte
+     */
     public Lexer(String source) {
+        // remove espacos e quebras de linha no final do codigo; substitui \r\n por \n, ja que o windows codifica cada quebra de linha como \r\n;
         this.source = source.stripTrailing().replace("\r\n", "\n").toCharArray();
         this.symbolTable = SymbolTableSingleton.getInstance();
-        this.lexical = LexicalSingleton.getInstance();
+        this.lexicalRegister = LexicalRegisterSingleton.getInstance();
         this.line = 1;
     }
 
+    /**
+     * Obtem o numero da linha atual em que se encontra o analisador lexico.
+     *
+     * @return linha atual
+     */
     public int getLine() {
         return line;
     }
 
+    /**
+     * Diz se existe um proximo token
+     *
+     * @return true se houve um proximo token, false caso contrario
+     */
     @Override
     public boolean hasNext() {
         return index < source.length;
     }
 
+    /**
+     * Realiza os passos do automato, do estado inicial ate o final, para retornar o proximo token.
+     *
+     * @return o proximo token
+     */
     @Override
     public Token next() {
-        int state = 0;
-        StringBuilder tok = new StringBuilder();
+        int state = INITIAL;
+        StringBuilder lex = new StringBuilder(); //usando string builder por razoes performaticas
         Token token = null;
 
-        while (state != 3) {
+        while (state != FINAL) {
             if (index <= source.length) {
-                Character c = (index < source.length ? source[index] : '\0');
-
-                if (!isFromAlphabet(c) && c != '\0') {
-                    System.err.printf("%d:caractere invalido.\n", line);
-                    System.exit(1);
-                }
+                Character c = getCurrentChar();
+                assertValidChar(c);
 
                 switch (state) {
-                    case 0:
+                    case INITIAL:
                         if (c == '!') {
-                            tok.append(c);
+                            lex.append(c); //lex += c
                             index++;
                             state = 11;
                         } else if ("<>=".contains(c.toString())) {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
                             state = 10;
                         } else if ("+-*,;()".contains(c.toString())) {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
-                            token = symbolTable.get(tok.toString());
-                            state = 3;
+                            token = symbolTable.get(lex.toString());
+                            state = FINAL;
                         } else if (c == '\'') {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
                             state = 8;
                         } else if (c == '_') {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
                             state = 1;
                         } else if (Character.isLetter(c)) {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
                             state = 2;
                         } else if (c == '0') {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
                             state = 5;
                         } else if ("123456789".contains(c.toString())) {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
                             state = 4;
-                        } else if ("\t\n\r\0".contains(c.toString()) || Character.isWhitespace(c)) {
+                        } else if ("\t\n\r".contains(c.toString()) || Character.isWhitespace(c)) {
                             index++;
                             if ("\n\r".contains(c.toString())) {
                                 line++;
                             }
                         } else if (c == '/') {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
                             state = 12;
                         } else {
-                            System.err.printf("%d:lexema nao identificado [%s]\n", line, tok.toString());
+                            lex.append(c);
+                            System.err.printf("%d:lexema nao identificado [%s]\n", line, lex.toString());
                             System.exit(1);
                         }
                         break;
                     case 1:
                         if (c == '_') {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
                         } else if (Character.isLetterOrDigit(c)) {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
                             state = 2;
                         } else {
-                            System.err.printf("%d:lexema nao identificado [%s]\n", line, tok.toString());
+                            System.err.printf("%d:lexema nao identificado [%s]\n", line, lex.toString());
                             System.exit(1);
                         }
                         break;
                     case 2:
                         if (c == '_' || Character.isLetterOrDigit(c)) {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
                         } else {
-                            state = 3;
-                            Token t = symbolTable.get(tok.toString());
+                            state = FINAL;
+                            Token t = symbolTable.get(lex.toString());
                             if (t == null) {
-                                symbolTable.put(tok.toString(), TokenType.ID);
-                                token = new Token(tok.toString(), TokenType.ID);
+                                symbolTable.put(lex.toString(), TokenType.ID);
+                                token = new Token(lex.toString(), TokenType.ID);
                             } else {
                                 token = t;
                             }
@@ -123,111 +145,107 @@ public class Lexer implements Iterator<Token> {
                         break;
                     case 4:
                         if (Character.isDigit(c)) {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
                         } else {
-                            token = new TokenNumber(tok.toString(), TokenType.CONSTANT);
-                            lexical.put(tok.toString(), token);
-                            state = 3;
+                            token = new TokenInteger(lex.toString());
+                            lexicalRegister.put(lex.toString(), (TokenConstant) token);
+                            state = FINAL;
                             //devolve
                         }
                         break;
                     case 5:
                         if (Character.isDigit(c)) {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
                             state = 4;
                         } else if ("Hh".contains(c.toString())) {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
                             state = 6;
                         } else {
-                            token = new TokenNumber(tok.toString(), TokenType.CONSTANT);
-                            lexical.put(tok.toString(), token);
-                            state = 3;
+                            token = new TokenInteger(lex.toString());
+                            lexicalRegister.put(lex.toString(), (TokenConstant) token);
+                            state = FINAL;
                             //devolve
                         }
                         break;
                     case 6:
                         if (isHexadecimal(c)) {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
                             state = 7;
                         } else {
-                            System.err.printf("%d:lexema nao identificado [%s]\n", line, tok.toString());
+                            System.err.printf("%d:lexema nao identificado [%s]\n", line, lex.toString());
                             System.exit(1);
                         }
                         break;
                     case 7:
                         if (isHexadecimal(c)) {
-                            tok.append(c);
-                            token = new TokenNumber(tok.toString(), TokenType.CONSTANT);
+                            lex.append(c);
+                            token = new TokenByte(lex.toString());
+                            lexicalRegister.put(lex.toString(), (TokenConstant) token);
                             index++;
-                            state = 3;
+                            state = FINAL;
                         } else {
-                            token = new TokenNumber(tok.toString(), TokenType.CONSTANT);
-                            lexical.put(tok.toString(), token);
-                            state = 3;
+                            token = new TokenByte(lex.toString());
+                            lexicalRegister.put(lex.toString(), (TokenConstant) token);
+                            state = FINAL;
                             //devolve
                         }
                         break;
                     case 8:
                         if (c == '\'') {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
                             state = 9;
                         } else if (!"\r\n".contains(c.toString())) {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
                         } else {
-                            System.err.printf("%d:lexema nao identificado [%s]\n", line, tok.toString());
+                            System.err.printf("%d:lexema nao identificado [%s]\n", line, lex.toString());
                             System.exit(1);
                         }
                         break;
                     case 9:
                         if (c == '\'') {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
                             state = 8;
                         } else {
-                            token = new TokenString(tok.toString(), TokenType.CONSTANT);
-                            lexical.put(tok.toString(), token);
-                            state = 3;
+                            token = new TokenString(lex.toString());
+                            lexicalRegister.put(lex.toString(), (TokenConstant) token);
+                            state = FINAL;
                             //devolve
                         }
                         break;
                     case 10:
-                        /* TODO Cabe refatoracao? */
                         if (c == '=') {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
-                            token = symbolTable.get(tok.toString());
-                            state = 3;
-                        } else {
-                            token = symbolTable.get(tok.toString());
-                            state = 3;
-                            //devolve
                         }
+                        token = symbolTable.get(lex.toString());
+                        state = FINAL;
                         break;
                     case 11:
                         if (c == '=') {
-                            tok.append(c);
+                            lex.append(c);
                             index++;
-                            token = symbolTable.get(tok.toString());
-                            state = 3;
+                            token = symbolTable.get(lex.toString());
+                            state = FINAL;
                         } else {
-                            System.err.printf("%d:lexema nao identificado [%s]\n", line, tok.toString());
+                            System.err.printf("%d:lexema nao identificado [%s]\n", line, lex.toString());
                             System.exit(1);
                         }
                         break;
                     case 12:
                         if (c == '*') {
-                            tok.setLength(tok.length() - 1);
+                            lex.setLength(0); //descarta o lexem
                             index++;
                             state = 13;
                         } else {
-                            token = symbolTable.get(tok.toString());
-                            state = 3;
+                            token = symbolTable.get(lex.toString());
+                            state = FINAL;
                             //devolve
                         }
                         break;
@@ -245,7 +263,7 @@ public class Lexer implements Iterator<Token> {
                     case 14:
                         if (c == '/') {
                             index++;
-                            state = 0;
+                            state = INITIAL;
                         } else if (c == '*') {
                             index++;
                         } else {
@@ -265,14 +283,39 @@ public class Lexer implements Iterator<Token> {
         return token;
     }
 
+    /**
+     * Obtem o caractere atual; E necessario avancar um caractere alem do ultimo do
+     * arquivo para identificar o ultimo lexema, portanto um espaco e adicionado.
+     *
+     * @return caractere atual
+     */
+    private char getCurrentChar() {
+        return index < source.length ? source[index] : ' ';
+    }
+
+    /**
+     * Se o caractere nao for permitido em um arquivo fonte, reporta erro e finaliza o programa
+     *
+     * @param c caractere
+     */
+    private void assertValidChar(Character c) {
+        if (!isValidChar(c)) {
+            System.err.printf("%d:caractere invalido.\n", line);
+            System.exit(1);
+        }
+    }
+
     private boolean isHexadecimal(Character c) {
         return "abcdefABCDEF".contains(c.toString()) || Character.isDigit(c);
     }
 
-    private boolean isFromAlphabet(char c) {
+    private boolean isValidChar(char c) {
         return Character.isLetterOrDigit(c) || symbols.contains(c + "");
     }
 
+    /**
+     * Dummy - exigido pelo Iterator mas sem uso pratico nessa aplicacao
+     */
     @Override
     public void remove() {
 

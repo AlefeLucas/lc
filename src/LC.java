@@ -1,9 +1,11 @@
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+/**
+ * Classe principal - trata a parametrizacao e instancia o analisador sintático.
+ */
 public class LC {
 
     private static final String USAGE = "Uso: java LC <arquivo fonte> <saida assembly>";
@@ -21,13 +23,11 @@ public class LC {
             File outputFile = getOutputFile(outputFilePath);
 
             if (sourceFile != null && outputFile != null) {
-                //TODO arquivos estao ok, prosseguir
+                //arquivos estao ok, prosseguir
                 try {
-                    String source = readFile(sourceFile, StandardCharsets.US_ASCII);
-
+                    String source = Files.readString(sourceFile.toPath(), StandardCharsets.US_ASCII);
                     Parser parser = new Parser(source);
                     parser.parse();
-
                 } catch (IOException e) {
                     System.out.println("Erro: falhou ao ler arquivo fonte.\n" + e.getMessage());
                     e.printStackTrace();
@@ -39,13 +39,6 @@ public class LC {
         }
     }
 
-    public static String readFile(File file, Charset charset) throws IOException {
-
-        return Files.readString(file.toPath(), charset);
-
-    }
-
-
     /**
      * Obtem o arquivo de saida de um dado caminho.
      *
@@ -56,7 +49,7 @@ public class LC {
         File output = null;
 
         if (validOutputName(outputFilePath)) {
-            File file = new File((outputFilePath));
+            File file = new File(outputFilePath);
             try {
                 //noinspection ResultOfMethodCallIgnored
                 file.createNewFile();

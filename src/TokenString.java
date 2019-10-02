@@ -1,22 +1,24 @@
 /**
- * Teste
+ * Token constante do tipo string - armazena o valor como String
  */
-public class TokenString extends Token implements TokenConstant<String> {
+@SuppressWarnings("WeakerAccess")
+public class TokenString extends TokenConstant<String> {
 
-    private String constant;
-
-    public TokenString(String lexeme, TokenType token) {
-        super(lexeme, token);
-
-        this.constant = lexeme.substring(1, lexeme.length() -1).replaceAll("''", "'");
+    /**
+     * Inicializa o token constante como tipo string e obtem o valor a partir do lexema
+     */
+    public TokenString(String lexeme) {
+        super(lexeme, ConstantType.STRING);
+        this.setConstant(lexeme.substring(1, lexeme.length() - 1).replaceAll("''", "'"));
     }
 
-    public String getConstant() {
-        return constant;
-    }
-
+    /**
+     * Converte para string para permitir visualizacao do conteudo do token
+     */
     @Override
     public String toString() {
-        return String.format("<\"%s\", %s, \"%s\">", getKey(), getValue().name(), getConstant());
+        return String.format("<\"%s\", %s, \"%s\", %s>", getKey(), getValue().name(), getConstant(), getType().name());
     }
+
+
 }
