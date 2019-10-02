@@ -1,7 +1,8 @@
 /**
- * Teste que da certo
+ * Teste const comecando com zero
  */
  integer n;
+ const num=0123;
 
  /******************************/
  main
@@ -13,3 +14,4 @@
         n=n-1;
     end
  end
+ 
