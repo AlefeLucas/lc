@@ -5,6 +5,10 @@ import java.nio.file.Files;
 
 /**
  * Classe principal - trata a parametrizacao e instancia o analisador sintático.
+ *
+ * @author Alefe Lucas
+ * @author Gabriella Mara
+ * @author Ricardo Sena
  */
 public class LC {
 

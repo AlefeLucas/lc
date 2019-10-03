@@ -1,5 +1,9 @@
 /**
  * Token constante do tipo string - armazena o valor como String
+ *
+ * @author Alefe Lucas
+ * @author Gabriella Mara
+ * @author Ricardo Sena
  */
 @SuppressWarnings("WeakerAccess")
 public class TokenString extends TokenConstant<String> {

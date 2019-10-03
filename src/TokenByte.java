@@ -1,5 +1,9 @@
 /**
  * Token constante do tipo byte - armazena o valor como Short pois eh o menor inteiro que comporta os valores 0 a 255.
+ *
+ * @author Alefe Lucas
+ * @author Gabriella Mara
+ * @author Ricardo Sena
  */
 @SuppressWarnings("WeakerAccess")
 public class TokenByte extends TokenConstant<Short> {

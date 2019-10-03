@@ -4,6 +4,10 @@ import java.util.Iterator;
  * Analisador Lexico - implementacao do automato;
  * 15 estados;
  * Dado o comportamento iterativo do analisador lexico, eh implementado como um Iterator de Token;
+ *
+ * @author Alefe Lucas
+ * @author Gabriella Mara
+ * @author Ricardo Sena
  */
 @SuppressWarnings("WeakerAccess")
 public class Lexer implements Iterator<Token> {

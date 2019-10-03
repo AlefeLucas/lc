@@ -2,6 +2,10 @@ import java.util.HashMap;
 
 /**
  * Tabela de simbolos - implementada como um hash que mapeia o lexema no token.
+ *
+ * @author Alefe Lucas
+ * @author Gabriella Mara
+ * @author Ricardo Sena
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class SymbolTable extends HashMap<String, Token> {

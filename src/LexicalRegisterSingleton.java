@@ -1,6 +1,10 @@
 /**
  * Uma vez que somente uma instancia do registro lexico eh usada durante o
  * processo de compilacao, eh implementado um singleton para o registro lexico.
+ *
+ * @author Alefe Lucas
+ * @author Gabriella Mara
+ * @author Ricardo Sena
  */
 @SuppressWarnings({"unused","WeakerAccess"})
 public abstract class LexicalRegisterSingleton {

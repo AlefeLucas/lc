@@ -2,6 +2,10 @@ import java.util.Map;
 
 /**
  * Token - associacao entre o lexema e o tipo de token correspondente
+ *
+ * @author Alefe Lucas
+ * @author Gabriella Mara
+ * @author Ricardo Sena
  */
 @SuppressWarnings("WeakerAccess")
 public class Token implements Map.Entry<String, TokenType> {

@@ -1,5 +1,9 @@
 /**
  * Token constante do tipo boolean - armazena o valor como Boolean.
+ *
+ * @author Alefe Lucas
+ * @author Gabriella Mara
+ * @author Ricardo Sena
  */
 @SuppressWarnings("WeakerAccess")
 public class TokenBoolean extends TokenConstant<Boolean> {

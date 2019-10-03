@@ -29,6 +29,10 @@ import java.util.Comparator;
  *        not H
  * L  =>  C|
  *        begin {C} end
+ *
+ * @author Alefe Lucas
+ * @author Gabriella Mara
+ * @author Ricardo Sena
  */
 @SuppressWarnings("WeakerAccess")
 public class Parser {

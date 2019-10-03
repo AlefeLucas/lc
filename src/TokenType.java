@@ -1,5 +1,9 @@
 /**
  * Enumera todos os tipos de token de acordo com o alfabeto da linguagem
+ *
+ * @author Alefe Lucas
+ * @author Gabriella Mara
+ * @author Ricardo Sena
  */
 @SuppressWarnings("unused")
 public enum TokenType {

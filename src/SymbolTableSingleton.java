@@ -1,6 +1,10 @@
 /**
  * Uma vez que somente uma instancia da tabela de simbolos eh usada durante o
  * processo de compilacao, eh implementado um singleton para a tabela de simbolos.
+ *
+ * @author Alefe Lucas
+ * @author Gabriella Mara
+ * @author Ricardo Sena
  */
 @SuppressWarnings({"unused","WeakerAccess"})
 public abstract class SymbolTableSingleton {

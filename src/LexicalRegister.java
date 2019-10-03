@@ -2,6 +2,10 @@ import java.util.HashMap;
 
 /**
  * Registro lexico. Implementado como uma hash que mapeia o lexema no token de constante.
+ *
+ * @author Alefe Lucas
+ * @author Gabriella Mara
+ * @author Ricardo Sena
  */
 @SuppressWarnings({"unused"})
 public class LexicalRegister extends HashMap<String, TokenConstant> {

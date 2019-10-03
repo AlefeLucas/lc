@@ -2,6 +2,9 @@
  * Subclasse de {@link Token} para constantes, contendo o valor da constante e o tipo de constante
  *
  * @param <T> tipo usado para armazenar o valor da constante
+ * @author Alefe Lucas
+ * @author Gabriella Mara
+ * @author Ricardo Sena
  */
 @SuppressWarnings("WeakerAccess")
 public abstract class TokenConstant<T> extends Token {
