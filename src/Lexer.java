@@ -192,10 +192,8 @@ public class Lexer implements Iterator<Token> {
                             index++;
                             state = FINAL;
                         } else {
-                            token = new TokenByte(lex.toString());
-                            lexicalRegister.put(lex.toString(), (TokenConstant) token);
-                            state = FINAL;
-                            //devolve
+                            System.err.printf("%d:lexema nao identificado [%s]\n", line, lex.toString());
+                            System.exit(1);
                         }
                         break;
                     case 8:
