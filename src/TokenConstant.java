@@ -1,23 +1,39 @@
 /**
  * Subclasse de {@link Token} para constantes, contendo o valor da constante e o tipo de constante
  *
- * @param <T> tipo usado para armazenar o valor da constante
  * @author Alefe Lucas
  * @author Gabriella Mara
  * @author Ricardo Sena
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class TokenConstant<T> extends Token {
+public class TokenConstant extends Token {
 
-    private T constant;
-    private ConstantType type;
+    private Object constant;
+    private DataType type;
 
     /**
      * Inicializa um token com o respectivo lexema e tipo de constante
      */
-    public TokenConstant(String lexeme, ConstantType type) {
+    public TokenConstant(String lexeme, DataType type) {
         super(lexeme, TokenType.CONSTANT);
         this.type = type;
+
+        switch (type){
+            case STRING:
+                this.constant = getString(lexeme);
+                break;
+            case INTEGER:
+                this.constant = getInteger(lexeme);
+                break;
+            case BYTE:
+                this.constant = getByte(lexeme);
+                break;
+            case BOOLEAN:
+                this.constant = getBoolean(lexeme);
+                break;
+            default:
+                throw new NullPointerException("DataType should not be null");
+        }
     }
 
     /**
@@ -25,7 +41,7 @@ public abstract class TokenConstant<T> extends Token {
      *
      * @return valor da constante
      */
-    public T getConstant() {
+    public Object getConstant() {
         return constant;
     }
 
@@ -34,7 +50,12 @@ public abstract class TokenConstant<T> extends Token {
      */
     @Override
     public String toString() {
-        return String.format("<\"%s\", %s, %s, %s>", getKey(), getValue().name(), getConstant(), getType().name());
+        switch (type){
+            case STRING:
+                return String.format("<\"%s\", %s, \"%s\", %s>", getKey(), getValue().name(), getConstant(), getType().name());
+            default:
+                return String.format("<\"%s\", %s, %s, %s>", getKey(), getValue().name(), getConstant(), getType().name());
+        }
     }
 
     /**
@@ -42,8 +63,12 @@ public abstract class TokenConstant<T> extends Token {
      *
      * @return tipo de constante
      */
-    public ConstantType getType() {
+    public DataType getType() {
         return type;
+    }
+
+    public void setType(DataType type) {
+        this.type = type;
     }
 
     /**
@@ -51,8 +76,33 @@ public abstract class TokenConstant<T> extends Token {
      *
      * @param constant valor da constante
      */
-    protected void setConstant(T constant) {
+    protected void setConstant(Object constant) {
         this.constant = constant;
+    }
+
+    public static Boolean getBoolean(String lexeme) {
+        return Boolean.parseBoolean(lexeme);
+    }
+
+    public static Short getInteger(String lexeme) {
+        return Short.parseShort(lexeme);
+    }
+
+    public static Short getByte(String lexeme) {
+        short s = Short.decode(lexeme.toLowerCase().replace('h', 'x'));
+        if (s >= 0 && s <= 255) {
+            return s;
+        } else {
+            IllegalStateException ex = new IllegalStateException("Erro");
+            ex.printStackTrace();
+            throw ex;
+        }
+    }
+
+
+
+    public static String getString(String lexeme){
+        return lexeme.substring(1, lexeme.length() - 1).replaceAll("''", "'");
     }
 
 }

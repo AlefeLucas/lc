@@ -31,8 +31,8 @@ public class SymbolTable extends HashMap<String, Token> {
         this.put("readln", TokenType.READLN);
         this.put("write", TokenType.WRITE);
         this.put("writeln", TokenType.WRITELN);
-        this.put("true", new TokenBoolean("true"));
-        this.put("false", new TokenBoolean("false"));
+        this.put("true", new TokenConstant("true", DataType.BOOLEAN));
+        this.put("false", new TokenConstant("false", DataType.BOOLEAN));
         this.put("and", TokenType.AND);
         this.put("or", TokenType.OR);
         this.put("not", TokenType.NOT);

@@ -5,7 +5,7 @@
  * @author Gabriella Mara
  * @author Ricardo Sena
  */
-public enum ConstantType {
+public enum DataType {
 
     INTEGER,
     BYTE,

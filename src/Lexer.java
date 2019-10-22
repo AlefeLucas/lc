@@ -139,8 +139,8 @@ public class Lexer implements Iterator<Token> {
                             state = FINAL;
                             Token t = symbolTable.get(lex.toString());
                             if (t == null) {
-                                symbolTable.put(lex.toString(), TokenType.ID);
-                                token = new Token(lex.toString(), TokenType.ID);
+                                token = new TokenID(lex.toString());
+                                symbolTable.put(lex.toString(), token);
                             } else {
                                 token = t;
                             }
@@ -152,7 +152,7 @@ public class Lexer implements Iterator<Token> {
                             lex.append(c);
                             index++;
                         } else {
-                            token = new TokenInteger(lex.toString());
+                            token = new TokenConstant(lex.toString(), DataType.INTEGER);
                             lexicalRegister.put(lex.toString(), (TokenConstant) token);
                             state = FINAL;
                             //devolve
@@ -168,7 +168,7 @@ public class Lexer implements Iterator<Token> {
                             index++;
                             state = 6;
                         } else {
-                            token = new TokenInteger(lex.toString());
+                            token = new TokenConstant(lex.toString(), DataType.INTEGER);
                             lexicalRegister.put(lex.toString(), (TokenConstant) token);
                             state = FINAL;
                             //devolve
@@ -187,7 +187,7 @@ public class Lexer implements Iterator<Token> {
                     case 7:
                         if (isHexadecimal(c)) {
                             lex.append(c);
-                            token = new TokenByte(lex.toString());
+                            token = new TokenConstant(lex.toString(), DataType.BYTE);
                             lexicalRegister.put(lex.toString(), (TokenConstant) token);
                             index++;
                             state = FINAL;
@@ -215,7 +215,7 @@ public class Lexer implements Iterator<Token> {
                             index++;
                             state = 8;
                         } else {
-                            token = new TokenString(lex.toString());
+                            token = new TokenConstant(lex.toString(), DataType.STRING);
                             lexicalRegister.put(lex.toString(), (TokenConstant) token);
                             state = FINAL;
                             //devolve
