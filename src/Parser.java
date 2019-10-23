@@ -1,3 +1,4 @@
+import javax.print.DocFlavor;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -248,7 +249,7 @@ public class Parser {
                  */
                 constant = (TokenConstant) matchedToken;
                 if (!in(constant.getType(), INTEGER_CONSTANTS)) {
-                    System.err.printf("%d:tipos incompatíveis \n", lexer.getLine(), matchedToken.getKey());
+                    System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
                     System.exit(1);
                 } else {
                     constant.setType(DataType.INTEGER);
@@ -256,7 +257,7 @@ public class Parser {
             }
 
             //{if(id1.tipo != constant.tipo) ERRO;}
-            if(id1.getType() != constant.getType()){
+            if (id1.getType() != constant.getType()) {
                 System.err.printf("%d:classe de identificador incompatível [%s]\n", lexer.getLine(), matchedToken.getKey());
                 System.exit(1);
             }
@@ -276,7 +277,7 @@ public class Parser {
              */
             TokenID id2 = (TokenID) matchedToken;
             id2.setType(jType);
-            if(id2.getKlass() == null){
+            if (id2.getKlass() == null) {
                 id2.setKlass(IdClass.VAR);
             } else {
                 System.err.printf("%d:identificador ja declarado [%s]\n", lexer.getLine(), matchedToken.getKey());
@@ -315,14 +316,14 @@ public class Parser {
                      */
                     constant = (TokenConstant) matchedToken;
                     if (!in(constant.getType(), INTEGER_CONSTANTS)) {
-                        System.err.printf("%d:tipos incompatíveis \n", lexer.getLine(), matchedToken.getKey());
+                        System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
                         System.exit(1);
                     } else {
                         constant.setType(DataType.INTEGER);
                     }
                 }
                 //{if(id2.tipo != constant.tipo) ERRO;}
-                if(id2.getType() != constant.getType()){
+                if (id2.getType() != constant.getType()) {
                     System.err.printf("%d:classe de identificador incompatível [%s]\n", lexer.getLine(), matchedToken.getKey());
                     System.exit(1);
                 }
@@ -353,10 +354,10 @@ public class Parser {
              * }
              */
             TokenID id = (TokenID) matchedToken;
-            if(id.getKlass() == null){
+            if (id.getKlass() == null) {
                 System.err.printf("%d:identificador nao declarado [%s]\n", lexer.getLine(), matchedToken.getKey());
                 System.exit(1);
-            } else if(id.getKlass() == IdClass.CONST){
+            } else if (id.getKlass() == IdClass.CONST) {
                 System.err.printf("%d:classe de identificador incompatível [%s]\n", lexer.getLine(), matchedToken.getKey());
                 System.exit(1);
             }
@@ -367,6 +368,10 @@ public class Parser {
             matchToken(TokenType.SEMICOLON);
 
             //{if(id.tipo != E.tipo) ERRO;}
+            if (id.getType() != eType.getValue()) {
+                System.err.printf("%d:classe de identificador incompatível [%s]\n", lexer.getLine(), matchedToken.getKey());
+                System.exit(1);
+            }
 
         } else if (token.getValue() == TokenType.WRITE) {
             matchToken(TokenType.WRITE);
@@ -378,18 +383,50 @@ public class Parser {
             matchToken(TokenType.READLN);
             matchToken(TokenType.OPEN_BRACE);
             matchToken(TokenType.ID);
+
+            /**
+             * {
+             *    if(id.classe == vazia) ERRO;
+             *    else if(id.classe == classe-const);
+             * }
+             */
+            TokenID id = (TokenID) matchedToken;
+            if (id.getKlass() == null) {
+                System.err.printf("%d:identificador nao declarado [%s]\n", lexer.getLine(), matchedToken.getKey());
+                System.exit(1);
+            } else if (id.getKlass() == IdClass.CONST) {
+                System.err.printf("%d:classe de identificador incompatível [%s]\n", lexer.getLine(), matchedToken.getKey());
+                System.exit(1);
+            }
+
             matchToken(TokenType.CLOSE_BRACE);
             matchToken(TokenType.SEMICOLON);
         } else if (token.getValue() == TokenType.WHILE) {
             matchToken(TokenType.WHILE);
             matchToken(TokenType.OPEN_BRACE);
-            e();
+            Wrapper<DataType> eType = new Wrapper<>();
+            e(eType);
+
+            //{if(E.tipo != BOOLEAN) ERRO}
+            if (eType.getValue() != DataType.BOOLEAN) {
+                System.err.printf("%d:classe de identificador incompatível [%s]\n", lexer.getLine(), matchedToken.getKey());
+                System.exit(1);
+            }
+
             matchToken(TokenType.CLOSE_BRACE);
             l();
         } else if (token.getValue() == TokenType.IF) {
             matchToken(TokenType.IF);
             matchToken(TokenType.OPEN_BRACE);
-            e();
+            Wrapper<DataType> eType = new Wrapper<>();
+            e(eType);
+
+            //{if(E.tipo != BOOLEAN) ERRO}
+            if (eType.getValue() != DataType.BOOLEAN) {
+                System.err.printf("%d:classe de identificador incompatível [%s]\n", lexer.getLine(), matchedToken.getKey());
+                System.exit(1);
+            }
+
             matchToken(TokenType.CLOSE_BRACE);
             matchToken(TokenType.THEN);
             l();
@@ -408,10 +445,12 @@ public class Parser {
     private void k() {
         matchToken(TokenType.OPEN_BRACE);
         if (in(token.getValue(), FIRST_E)) {
-            e();
+            Wrapper<DataType> e1Type = new Wrapper<>();
+            e(e1Type);
             while (token.getValue() == TokenType.COMMA) {
                 matchToken(TokenType.COMMA);
-                e();
+                Wrapper<DataType> e2Type = new Wrapper<>();
+                e(e2Type);
             }
         }
         matchToken(TokenType.CLOSE_BRACE);
@@ -421,26 +460,220 @@ public class Parser {
 
     /**
      * E  =>  F{(==|!=|<|>|<=|>=)F}
+     *
      * @param eType
      */
     private void e(Wrapper<DataType> eType) {
-        f();
+        Wrapper<DataType> f1Type = new Wrapper<>();
+        f(f1Type);
+
+        //{E.tipo := F1.tipo}
+        eType.setValue(f1Type.getValue());
+
         final TokenType[] LOGIC_OP = {TokenType.EQUAL, TokenType.GREATER, TokenType.GREATER_OR_EQUAL, TokenType.LESS, TokenType.LESS_OR_EQUAL, TokenType.NOT_EQUAL};
         while (in(token.getValue(), LOGIC_OP)) {
             if (token.getValue() == TokenType.EQUAL) {
                 matchToken(TokenType.EQUAL);
+                Wrapper<DataType> f2Type = new Wrapper<>();
+                f(f2Type);
+
+                /**
+                 * {
+                 *     switch(E.tipo)
+                 *        case INTEGER:
+                 *        case BYTE:
+                 *           if(F2.tipo != INTEGER && F2.tipo != BYTE) ERRO;
+                 *           break;
+                 *        case STRING:
+                 *           if(F2.tipo != STRING) ERRO;
+                 *        case BOOLEAN:
+                 *           if(F2.tipo != BOOLEAN) ERRO;
+                 * }
+                 */
+                switch (eType.getValue()) {
+                    case INTEGER:
+                    case BYTE:
+                        if (f2Type.getValue() != DataType.INTEGER && f2Type.getValue() != DataType.BYTE) {
+                            System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                            System.exit(1);
+                        }
+                        break;
+                    case STRING:
+                        if (f2Type.getValue() != DataType.STRING) {
+                            System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                            System.exit(1);
+                        }
+                        break;
+                    case BOOLEAN:
+                        if (f2Type.getValue() != DataType.BOOLEAN) {
+                            System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                            System.exit(1);
+                        }
+                }
             } else if (token.getValue() == TokenType.NOT_EQUAL) {
                 matchToken(TokenType.NOT_EQUAL);
+                Wrapper<DataType> f2Type = new Wrapper<>();
+                f(f2Type);
+
+                /**
+                 * {
+                 *     switch(E.tipo)
+                 *        case INTEGER:
+                 *        case BYTE:
+                 *           if(F2.tipo != INTEGER && F2.tipo != BYTE) ERRO;
+                 *           break;
+                 *        case STRING:
+                 *           ERRO;
+                 *        case BOOLEAN:
+                 *           if(F2.tipo != BOOLEAN) ERRO;
+                 * }
+                 */
+                switch (eType.getValue()) {
+                    case INTEGER:
+                    case BYTE:
+                        if (f2Type.getValue() != DataType.INTEGER && f2Type.getValue() != DataType.BYTE) {
+                            System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                            System.exit(1);
+                        }
+                        break;
+                    case STRING:
+                        System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                        System.exit(1);
+                        break;
+                    case BOOLEAN:
+                        if (f2Type.getValue() != DataType.BOOLEAN) {
+                            System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                            System.exit(1);
+                        }
+                }
             } else if (token.getValue() == TokenType.LESS) {
                 matchToken(TokenType.LESS);
+                Wrapper<DataType> f2Type = new Wrapper<>();
+                f(f2Type);
+
+                /**
+                 * {
+                 *     switch(E.tipo)
+                 *        case INTEGER:
+                 *        case BYTE:
+                 *           if(F2.tipo != INTEGER && F2.tipo != BYTE) ERRO;
+                 *           break;
+                 *        case STRING:
+                 *        case BOOLEAN:
+                 *           ERRO;
+                 * }
+                 */
+                switch (eType.getValue()) {
+                    case INTEGER:
+                    case BYTE:
+                        if (f2Type.getValue() != DataType.INTEGER && f2Type.getValue() != DataType.BYTE) {
+                            System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                            System.exit(1);
+                        }
+                        break;
+                    case STRING:
+                    case BOOLEAN:
+                        System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                        System.exit(1);
+                        break;
+                }
             } else if (token.getValue() == TokenType.LESS_OR_EQUAL) {
                 matchToken(TokenType.LESS_OR_EQUAL);
+                Wrapper<DataType> f2Type = new Wrapper<>();
+                f(f2Type);
+
+                /**
+                 * {
+                 *     switch(E.tipo)
+                 *        case INTEGER:
+                 *        case BYTE:
+                 *           if(F2.tipo != INTEGER && F2.tipo != BYTE) ERRO;
+                 *           break;
+                 *        case STRING:
+                 *        case BOOLEAN:
+                 *           ERRO;
+                 * }
+                 */
+                switch (eType.getValue()) {
+                    case INTEGER:
+                    case BYTE:
+                        if (f2Type.getValue() != DataType.INTEGER && f2Type.getValue() != DataType.BYTE) {
+                            System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                            System.exit(1);
+                        }
+                        break;
+                    case STRING:
+                    case BOOLEAN:
+                        System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                        System.exit(1);
+                        break;
+                }
             } else if (token.getValue() == TokenType.GREATER) {
                 matchToken(TokenType.GREATER);
+                Wrapper<DataType> f2Type = new Wrapper<>();
+                f(f2Type);
+
+                /**
+                 * {
+                 *     switch(E.tipo)
+                 *        case INTEGER:
+                 *        case BYTE:
+                 *           if(F2.tipo != INTEGER && F2.tipo != BYTE) ERRO;
+                 *           break;
+                 *        case STRING:
+                 *        case BOOLEAN:
+                 *           ERRO;
+                 * }
+                 */
+                switch (eType.getValue()) {
+                    case INTEGER:
+                    case BYTE:
+                        if (f2Type.getValue() != DataType.INTEGER && f2Type.getValue() != DataType.BYTE) {
+                            System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                            System.exit(1);
+                        }
+                        break;
+                    case STRING:
+                    case BOOLEAN:
+                        System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                        System.exit(1);
+                        break;
+                }
             } else {
                 matchToken(TokenType.GREATER_OR_EQUAL);
+                Wrapper<DataType> f2Type = new Wrapper<>();
+                f(f2Type);
+
+                /**
+                 * {
+                 *     switch(E.tipo)
+                 *        case INTEGER:
+                 *        case BYTE:
+                 *           if(F2.tipo != INTEGER && F2.tipo != BYTE) ERRO;
+                 *           break;
+                 *        case STRING:
+                 *        case BOOLEAN:
+                 *           ERRO;
+                 * }
+                 */
+                switch (eType.getValue()) {
+                    case INTEGER:
+                    case BYTE:
+                        if (f2Type.getValue() != DataType.INTEGER && f2Type.getValue() != DataType.BYTE) {
+                            System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                            System.exit(1);
+                        }
+                        break;
+                    case STRING:
+                    case BOOLEAN:
+                        System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                        System.exit(1);
+                        break;
+                }
             }
-            f();
+
+            //{E.tipo := BOOLEAN}
+            eType.setValue(DataType.BOOLEAN);
         }
     }
 
@@ -448,22 +681,119 @@ public class Parser {
      * F  =>  [+|-]G{(+|-|or)G}
      */
     private void f(Wrapper<DataType> fType) {
+        Wrapper<DataType> g1Type;
+
         if (token.getValue() == TokenType.PLUS) {
             matchToken(TokenType.PLUS);
+            g1Type = new Wrapper<>();
+            g(g1Type);
+
+            //{if(G1.tipo NOT IN(BYTE, INTEGER)) ERRO;}
+            if (!in(g1Type.getValue(), INTEGER_CONSTANTS)) {
+                System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                System.exit(1);
+            }
         } else if (token.getValue() == TokenType.MINUS) {
             matchToken(TokenType.MINUS);
+            g1Type = new Wrapper<>();
+            g(g1Type);
+
+            /**
+             * {
+             *    if(G1.tipo == BYTE)
+             *       G1.tipo := INTEGER;
+             *    else if(G1.tipo != INTEGER)
+             *       ERRO;
+             * }
+             */
+            if (g1Type.getValue() == DataType.BYTE) {
+                g1Type.setValue(DataType.INTEGER);
+            } else if (g1Type.getValue() != DataType.INTEGER) {
+                System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                System.exit(1);
+            }
+        } else {
+            g1Type = new Wrapper<>();
+            g(g1Type);
         }
-        g();
+        //{F.tipo := G1.tipo}
+        fType.setValue(g1Type.getValue());
+
         final TokenType[] OP = {TokenType.MINUS, TokenType.OR, TokenType.PLUS};
         while (in(token.getValue(), OP)) {
+            Wrapper<DataType> g2Type;
             if (token.getValue() == TokenType.PLUS) {
                 matchToken(TokenType.PLUS);
+                //{if(F.tipo NOT IN(BYTE, INTEGER, STRING)) ERRO}
+                if (!in(fType.getValue(), INTEGER_CONSTANTS) && fType.getValue() != DataType.STRING) {
+                    System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                    System.exit(1);
+                }
+
+                g2Type = new Wrapper<>();
+                g(g2Type);
+
+                /**
+                 * {
+                 *     if(F.tipo IN(BYTE, INTEGER)
+                 *        if(G2.tipo NOT IN(BYTE, INTEGER)) ERRO;
+                 *        else if(G2.tipo == INTEGER) F.tipo := INTEGER;
+                 *     else if(G2.tipo != STRING) ERRO;
+                 * }
+                 */
+                if (in(fType.getValue(), INTEGER_CONSTANTS)) {
+                    if (!in(g2Type.getValue(), INTEGER_CONSTANTS)) {
+                        System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                        System.exit(1);
+                    } else if (g2Type.getValue() == DataType.INTEGER) {
+                        fType.setValue(DataType.INTEGER);
+                    }
+                } else if (g2Type.getValue() != DataType.STRING) {
+                    System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                    System.exit(1);
+                }
+
             } else if (token.getValue() == TokenType.MINUS) {
                 matchToken(TokenType.MINUS);
+
+                //{if(F.tipo NOT IN(BYTE, INTEGER)) ERRO}
+                if (!in(fType.getValue(), INTEGER_CONSTANTS)) {
+                    System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                    System.exit(1);
+                }
+
+                g2Type = new Wrapper<>();
+                g(g2Type);
+
+                /**
+                 * {
+                 *    if(G2.tipo NOT IN(BYTE, INTEGER)) ERRO;
+                 *    else if(G2.tipo == INTEGER) F.tipo := INTEGER;
+                 * }
+                 */
+                if (!in(g2Type.getValue(), INTEGER_CONSTANTS)) {
+                    System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                    System.exit(1);
+                } else if (g2Type.getValue() == DataType.INTEGER) fType.setValue(DataType.INTEGER);
             } else {
                 matchToken(TokenType.OR);
+
+                //{if(F.tipo != BOOLEAN) ERRO}
+                if(fType.getValue() != DataType.BOOLEAN){
+                    System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                    System.exit(1);
+                }
+
+                g2Type = new Wrapper<>();
+                g(g2Type);
+
+                //{if(G2.tipo != BOOLEAN) ERRO}
+                if(g2Type.getValue() != DataType.BOOLEAN){
+                    System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                    System.exit(1);
+                }
+
             }
-            g();
         }
     }
 
@@ -471,17 +801,89 @@ public class Parser {
      * G  =>  H{(*|/|and)H}
      */
     private void g(Wrapper<DataType> gType) {
-        h();
+        Wrapper<DataType> h1Type = new Wrapper<>();
+        h(h1Type);
+
+        //{G.tipo := H1.tipo}
+        gType.setValue(h1Type.getValue());
+
         final TokenType[] OP = {TokenType.AND, TokenType.DIVIDE, TokenType.MULTIPLY};
         while (in(token.getValue(), OP)) {
             if (token.getValue() == TokenType.MULTIPLY) {
                 matchToken(TokenType.MULTIPLY);
+
+                //{if(G.tipo NOT IN(BYTE, INTEGER)) ERRO}
+                if(!in(gType.getValue(), INTEGER_CONSTANTS)){
+                    System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                    System.exit(1);
+                }
+                Wrapper<DataType> h2Type = new Wrapper<>();
+                h(h2Type);
+
+                /**
+                 * {
+                 *    if(H2.tipo NOT IN(BYTE, INTEGER)) ERRO;
+                 *    else if(H2.tipo == INTEGER) G.tipo := INTEGER;
+                 * }
+                 */
+                if(!in(h2Type.getValue(), INTEGER_CONSTANTS)){
+                    System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                    System.exit(1);
+                } else if(h2Type.getValue() == DataType.INTEGER) gType.setValue(DataType.INTEGER);
             } else if (token.getValue() == TokenType.DIVIDE) {
                 matchToken(TokenType.DIVIDE);
+
+                /**
+                 *  {
+                 *     if(G.tipo == BYTE)
+                 *        G.tipo := INTEGER;
+                 *     else if(G.tipo != INTEGER)
+                 *        ERRO;
+                 *  }
+                 */
+                if(gType.getValue() == DataType.BYTE){
+                    gType.setValue(DataType.INTEGER);
+                } else if(gType.getValue() != DataType.INTEGER){
+                    System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                    System.exit(1);
+                }
+
+                Wrapper<DataType> h2Type = new Wrapper<>();
+                h(h2Type);
+
+                /**
+                 * {
+                 *    if(H2.tipo == BYTE)
+                 *       H2.tipo := INTEGER;
+                 *    else if(H2.tipo != INTEGER)
+                 *       ERRO;
+                 * }
+                 */
+                if(h2Type.getValue() == DataType.BYTE){
+                    h2Type.setValue(DataType.INTEGER);
+                } else if(h2Type.getValue() != DataType.INTEGER){
+                    System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                    System.exit(1);
+                }
             } else {
                 matchToken(TokenType.AND);
+
+                //{if(G.tipo != BOOLEAN) ERRO}
+                if(gType.getValue() != DataType.BOOLEAN){
+                    System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                    System.exit(1);
+                }
+
+                Wrapper<DataType> h2Type = new Wrapper<>();
+                h(h2Type);
+
+                //{if(H2.tipo != BOOLEAN) ERRO}
+                if(h2Type.getValue() != DataType.BOOLEAN){
+                    System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                    System.exit(1);
+                }
             }
-            h();
+
         }
     }
 
@@ -494,14 +896,55 @@ public class Parser {
     private void h(Wrapper<DataType> hType) {
         if (token.getValue() == TokenType.ID) {
             matchToken(TokenType.ID);
+
+            /**
+             * {
+             *    if(id.classe == vazia)
+             *       ERRO;
+             *    else
+             *       H.tipo := id.tipo;
+             * }
+             */
+            TokenID id = (TokenID) matchedToken;
+            if(id.getKlass() == null){
+                System.err.printf("%d:identificador nao declarado [%s]\n", lexer.getLine(), matchedToken.getKey());
+                System.exit(1);
+            } else{
+                hType.setValue(id.getType());
+            }
         } else if (token.getValue() == TokenType.CONSTANT) {
             matchToken(TokenType.CONSTANT);
+
+            //{H.tipo := constant.tipo}
+            TokenConstant constant = (TokenConstant) matchedToken;
+            hType.setValue(constant.getType());
         } else if (token.getValue() == TokenType.NOT) {
             matchToken(TokenType.NOT);
-            matchToken(TokenType.ID);
+            Wrapper<DataType> h1Type = new Wrapper<>();
+            h(h1Type);
+
+            /**
+             * {
+             *    if(H1.tipo != BOOLEAN)
+             *       ERRO;
+             *     else
+             *       H.tipo := BOOLEAN;
+             * }
+             */
+            if(h1Type.getValue() != DataType.BOOLEAN){
+                System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+                System.exit(1);
+            } else {
+                hType.setValue(DataType.BOOLEAN);
+            }
         } else {
             matchToken(TokenType.OPEN_BRACE);
-            e();
+            Wrapper<DataType> eType = new Wrapper<>();
+            e(eType);
+
+            //{H.tipo := E.tipo}
+            hType.setValue(eType.getValue());
+
             matchToken(TokenType.CLOSE_BRACE);
         }
     }
