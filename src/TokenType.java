@@ -42,6 +42,6 @@ public enum TokenType {
     SEMICOLON,
     OPEN_BRACE,
     CLOSE_BRACE,
-    ASSIGN;
+    ASSIGN
 
 }

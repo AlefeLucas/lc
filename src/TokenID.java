@@ -1,3 +1,11 @@
+/**
+ * Subclasse de {@link Token} para identificadores, contendo o tipo e a classe do ID
+ *
+ * @author Alefe Lucas
+ * @author Gabriella Mara
+ * @author Ricardo Sena
+ */
+@SuppressWarnings("WeakerAccess")
 public class TokenID extends Token {
 
     private DataType type;

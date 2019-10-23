@@ -5,32 +5,33 @@ import java.util.Comparator;
  * Analisador sintatico - Implementa a gramatica da linguagem. Cada simbolo nao terminal
  * tem seu metodo e cada simbolo terminal eh casado com o matchToken.
  * <p>
+ *     Analisador semântico - performa os esquemas de traducao enumerados e denotados por r#
  * <p>
  * S  =>  {D}main {C} end
- * D  =>  integer J|
- * boolean J|
- * string J|
- * byte J|
- * const id P;
- * J  =>  M{,M};
- * M  =>  id[P]
- * P  =>  =(constant|-constant)
- * C  =>  id=E;|
+ * D  =>  integer 1 J|
+ * boolean 2 J {}|
+ * string 3 J|
+ * byte 4 J|
+ * const id 5 P 8;
+ * J  =>  9 M1{,10 M2};
+ * M  =>  id 11 [P 12]
+ * P  =>  =(constant 6| - constant 7)
+ * C  =>  id 13 =E 14; |
  * write K|
  * writeln K|
- * readln”(“id”)”;|
+ * readln”(“id 13”)”;|
  * while N L|
  * if N then L [else L]|
  * ;
- * N  =>  ”(“E”)”
- * K  =>  ”(“[E{,E}]”)”);
- * E  =>  F{(== F|!= F|< F|> F|<= F|>= F)}
- * F  =>  (+ G|- G| G){(+ G|- G|or G)}
- * G  =>  H{(* H|/ H|and H)}
- * H  =>  id|
- * constant|
- * “(“E”)”|
- * not H
+ * N  =>  ”(“E 15”)”
+ * K  =>  ”(“[E1{,E2}]”)”);
+ * E  =>  F1 16 {(== F2 17|!= F2 18|< F2 19|> F2 19 |<= F2 19|>= F2 19) 20}
+ * F  =>  (+ G1 21 |- G1 22| G1)23 {(+ 24 G2 25|- 26 G2 27|or 28 G2 29)}
+ * G  =>  H1 30 {(* 31 H2 32|/ 33 H2 34|and 35 H2 36)}
+ * H  =>  id 37|
+ * constant 6 38|
+ * “(“E”)” 39|
+ * not H1 40
  * L  =>  C|
  * begin {C} end
  *
