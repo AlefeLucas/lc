@@ -4,6 +4,7 @@ integer i, j = -2;
 boolean b, c = true;
 string s, t = 'Hello';
 byte by, te = 255;
+const k = -0h23;
 
 /* Programa Principal */
 main
@@ -13,6 +14,7 @@ main
   te = by + 0hff;
   te = by - 1;
   i = te;
+  by = k;
   ;
   writeln('Oi' + ' ' + 'Tudo bom?');
   while('Oi' == 'Oi') begin

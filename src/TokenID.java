@@ -22,4 +22,8 @@ public class TokenID extends Token {
     public void setKlass(IdClass klass) {
         this.klass = klass;
     }
+
+    @Override
+    public String toString() {
+        return String.format("<\"%s\", %s, %s, %s>", getKey(), getValue().name(), getKlass().name(), getType().name());    }
 }

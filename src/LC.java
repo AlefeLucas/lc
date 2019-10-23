@@ -32,6 +32,7 @@ public class LC {
                     String source = Files.readString(sourceFile.toPath(), StandardCharsets.US_ASCII);
                     Parser parser = new Parser(source);
                     parser.parse();
+                    System.out.println(SymbolTableSingleton.getInstance());
                 } catch (IOException e) {
                     System.out.println("Erro: falhou ao ler arquivo fonte.\n" + e.getMessage());
                     e.printStackTrace();
