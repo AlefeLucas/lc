@@ -14,7 +14,8 @@ main
   te = by + 0hff;
   te = by - 1;
   i = te;
-  by = k;
+  by = 0h12;
+  k = 5;
   ;
   writeln('Oi' + ' ' + 'Tudo bom?');
   while('Oi' == 'Oi') begin

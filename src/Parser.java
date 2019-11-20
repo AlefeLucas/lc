@@ -570,7 +570,7 @@ public class Parser {
 
     private void r12(TokenID id, TokenConstant constant) {
         if (id.getType() != constant.getType()) {
-            errorIncompatibleId();
+            errorIncompatibleType();
         }
     }
 
@@ -584,13 +584,13 @@ public class Parser {
 
     private void r14(TokenID id, Wrapper<DataType> eType) {
         if (id.getType() != eType.getValue() && (id.getType() != DataType.INTEGER || eType.getValue() != DataType.BYTE)) {
-            errorIncompatibleId();
+            errorIncompatibleType();
         }
     }
 
     private void r15(Wrapper<DataType> eType) {
         if (eType.getValue() != DataType.BOOLEAN) {
-            errorIncompatibleId();
+            errorIncompatibleType();
         }
     }
 
