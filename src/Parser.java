@@ -142,11 +142,11 @@ public class Parser {
             TokenID id = (TokenID) matchedToken;
             r5(id);
 
-            p();
+            Wrapper<DataType> pType = new Wrapper<>();
+            p(pType);
 
             //8
-            TokenConstant constant = (TokenConstant) matchedToken;
-            r8(id, constant);
+            r8(id, pType);
 
             matchToken(TokenType.SEMICOLON);
         }
@@ -155,7 +155,7 @@ public class Parser {
     /**
      * P  =>  =(constant | - constant)
      */
-    private void p() {
+    private void p(Wrapper<DataType> pType) {
         matchToken(TokenType.ASSIGN);
         TokenConstant constant;
         if (token.getValue() == TokenType.CONSTANT) {
@@ -164,7 +164,6 @@ public class Parser {
             //6
             constant = (TokenConstant) matchedToken;
             r6(constant);
-
         } else {
             matchToken(TokenType.MINUS);
             matchToken(TokenType.CONSTANT);
@@ -173,6 +172,8 @@ public class Parser {
             constant = (TokenConstant) matchedToken;
             r7(constant);
         }
+        //41
+        r41(pType, constant);
     }
 
     /**
@@ -198,11 +199,11 @@ public class Parser {
         r11(mType, id);
 
         if (token.getValue() == TokenType.ASSIGN) {
-            p();
+            Wrapper<DataType> pType = new Wrapper<>();
+            p(pType);
 
             //12
-            TokenConstant constant = (TokenConstant) matchedToken;
-            r12(id, constant);
+            r12(id, pType);
         }
     }
 
@@ -554,9 +555,8 @@ public class Parser {
         }
     }
 
-
-    private void r8(TokenID id, TokenConstant constant) {
-        id.setType(constant.getType());
+    private void r8(TokenID id, Wrapper<DataType> pType) {
+        id.setType(pType.getValue());
     }
 
     private void r11(DataType mType, TokenID id) {
@@ -568,8 +568,8 @@ public class Parser {
         }
     }
 
-    private void r12(TokenID id, TokenConstant constant) {
-        if (id.getType() != constant.getType()) {
+    private void r12(TokenID id, Wrapper<DataType> pType) {
+        if (id.getType() != pType.getValue()) {
             errorIncompatibleType();
         }
     }
@@ -578,7 +578,7 @@ public class Parser {
         if (id.getKlass() == null) {
             errorIdNotDeclared();
         } else if (id.getKlass() == IdClass.CONST) {
-            errorIncompatibleId();
+            errorIncompatibleClass();
         }
     }
 
@@ -787,11 +787,14 @@ public class Parser {
         }
     }
 
-    private void errorIncompatibleId() {
+    private void r41(Wrapper<DataType> pType, TokenConstant constant) {
+        pType.setValue(constant.getType());
+    }
+
+    private void errorIncompatibleClass() {
         System.err.printf("%d:classe de identificador incompatível [%s]\n", lexer.getLine(), matchedToken.getKey());
         System.exit(1);
     }
-
 
     private void errorIdDuplicated() {
         System.err.printf("%d:identificador ja declarado [%s]\n", lexer.getLine(), matchedToken.getKey());
