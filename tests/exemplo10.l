@@ -1,9 +1,16 @@
 
  /************ teste sem comandos (Erro)****************/
 
- integer _ahsu112=50;
 
+ integer _a =50;
+ byte a = 0;
+ boolean y;
+ string s = 's';
  main
-   
- end
+ a = (200 + 56);
+s = 's';
+_a = 300;
+
+  
  
+ end

@@ -12,6 +12,7 @@ byte e = 255;
 
 integer f = 256;
 
+
 main end 
 */
 
@@ -21,20 +22,18 @@ main end
 
 
 
-/* Tipos incompativeis */
+/* Tipos incompativeis*/
+string a = 'ola';
+string a = 'luana';
 
+boolean b = true;
+boolean b = false;
 
+byte d = 1;
+byte d = 255;
 
-integer p = -300;
-
-
-
-
-
-
-integer f = 1;
-
-
+integer f = 256;
+integer f = 3000;
 
 
 main

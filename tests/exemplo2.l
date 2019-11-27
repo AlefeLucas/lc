@@ -1,25 +1,28 @@
-/* Exemplo de Programa na linguagem L */
+/* Funcionar */
 
-integer i, j = -2;
-boolean b, c = true;
-string s, t = 'Hello';
-byte by, te = 255;
-const k = -0h23;
 
-/* Programa Principal */
+boolean a = true;
+boolean b = false;
+boolean p = true,x = false,y = false,z = true;
+
 main
-  i = (i * (j - i) + te / j * by) - (10 / 2);
-  te = by + 255;
-  te = 255 + by;
-  te = by + 0hff;
-  te = by - 1;
-  i = te;
-  by = 0h12;
-  ;
-  writeln('Oi' + ' ' + 'Tudo bom?');
-  while('Oi' == 'Oi') begin
-     if(not (478 < 4) and (6 > 9) or not not (789 / 0 != 1 * 2) and b or not ('a' + 'c' == 'b')) then;
-  end
 end
 
 
+
+/* ERROS */
+
+/* Tipos incompativeis e identificador ja declarado
+
+boolean p = true,x = false,x = false,y = true;
+boolean p = true,x = false,p = false,y = true;
+
+boolean d  = true; 
+boolean c = 'teste';
+boolean d  = 300;
+
+main
+
+
+end
+*/

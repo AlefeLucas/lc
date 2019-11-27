@@ -19,18 +19,18 @@ import java.util.Comparator;
  * C  =>  id 13 =E 14; |
  * write K|
  * writeln K|
- * readln”(“id 13”)”;|
+ * readln"("id 13")";|
  * while N L|
  * if N then L [else L]|
  * ;
- * N  =>  ”(“E 15”)”
- * K  =>  ”(“[E1{,E2}]”)”);
+ * N  =>  "("E 15")"
+ * K  =>  "("[E1{,E2}]")");
  * E  =>  F1 16 {(== F2 17|!= F2 18|< F2 19|> F2 19 |<= F2 19|>= F2 19) 20}
  * F  =>  (+ G1 21 |- G1 22| G1)23 {(+ 24 G2 25|- 26 G2 27|or 28 G2 29)}
  * G  =>  H1 30 {(* 31 H2 32|/ 33 H2 34|and 35 H2 36)}
  * H  =>  id 37|
  * constant 6 38|
- * “(“E”)” 39|
+ * "("E")" 39|
  * not H1 40
  * L  =>  C|
  * begin {C} end
@@ -67,6 +67,10 @@ public class Parser {
         try {
             token = lexer.next();
             s();
+            if(token != null){
+                System.err.printf("%d:token nao esperado [%s]\n", lexer.getLine(), token.getKey());
+                System.exit(1);
+            }
         } catch (NullPointerException ex) {
             System.err.printf("%d:fim de arquivo nao esperado.\n", lexer.getLine());
             System.exit(1);
@@ -268,7 +272,7 @@ public class Parser {
     }
 
     /**
-     * N  =>  ”(“E”)”
+     * N  =>  "("E")"
      */
     private void n() {
         matchToken(TokenType.OPEN_BRACE);
@@ -569,7 +573,7 @@ public class Parser {
     }
 
     private void r12(TokenID id, Wrapper<DataType> pType) {
-        if (id.getType() != pType.getValue()) {
+        if (id.getType() != pType.getValue() && (id.getType() != DataType.INTEGER || DataType.BYTE != pType.getValue())) {
             errorIncompatibleType();
         }
     }
@@ -792,7 +796,7 @@ public class Parser {
     }
 
     private void errorIncompatibleClass() {
-        System.err.printf("%d:classe de identificador incompatível [%s]\n", lexer.getLine(), matchedToken.getKey());
+        System.err.printf("%d:classe de identificador incompativel [%s]\n", lexer.getLine(), matchedToken.getKey());
         System.exit(1);
     }
 
@@ -802,7 +806,7 @@ public class Parser {
     }
 
     private void errorIncompatibleType() {
-        System.err.printf("%d:tipos incompatíveis \n", lexer.getLine());
+        System.err.printf("%d:tipos incompativeis \n", lexer.getLine());
         System.exit(1);
     }
 

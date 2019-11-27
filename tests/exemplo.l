@@ -3,6 +3,7 @@
 integer n;
 boolean naoTerminou = false;
 const MAXITER=45;
+string nome;
 
 /* Programa Principal */
 main
@@ -16,5 +17,3 @@ main
     naoTerminou=n<MAXITER;
   end
 end
-
-
